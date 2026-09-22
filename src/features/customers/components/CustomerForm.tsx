@@ -67,13 +67,13 @@ export function CustomerForm({
   const submit: SubmitHandler<CustomerFormData> = async (data) => {
     await onSubmit({
       ...data,
-      email: data.email || undefined,
-      phone: data.phone || undefined,
-      taxId: data.taxId || undefined,
-      companyName: data.companyName || undefined,
-      address: data.address || undefined,
-      city: data.city || undefined,
-      notes: data.notes || undefined,
+      email: data.email,
+      phone: data.phone,
+      taxId: data.taxId,
+      companyName: data.companyName,
+      address: data.address,
+      city: data.city,
+      notes: data.notes,
     });
   };
 
