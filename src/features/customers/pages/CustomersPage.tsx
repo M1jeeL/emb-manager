@@ -18,7 +18,17 @@ import type {
 
 import type { CustomerFormData } from "../schemas/customer.schema";
 import { Pagination } from "../../../components/ui/Pagination";
-import { ConfirmDialog, useToast } from "../../../components/ui";
+import {
+  Button,
+  ConfirmDialog,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  useToast,
+} from "../../../components/ui";
 import { getApiErrorMessage } from "../../../lib/getApiErrorMessage";
 
 function parsePositiveInteger(value: string | null, fallback: number) {
@@ -213,13 +223,13 @@ export function CustomersPage() {
             Gestiona los clientes y sus datos de contacto.
           </p>
         </div>
-        <button
+        <Button
           type="button"
           onClick={openCreateForm}
           className="rounded-lg bg-indigo-600 px-4 py-2.5 font-medium text-white transition hover:bg-indigo-700"
         >
           + Nuevo cliente
-        </button>
+        </Button>
       </div>
 
       {/* Filtros */}
@@ -252,39 +262,39 @@ export function CustomersPage() {
         ) : (
           <>
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="border-b bg-slate-50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+              <Table className="w-full">
+                <TableHeader className="border-b bg-slate-50">
+                  <TableRow>
+                    <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
                       Cliente
-                    </th>
+                    </TableHead>
 
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                    <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
                       Empresa
-                    </th>
+                    </TableHead>
 
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                    <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
                       Contacto
-                    </th>
+                    </TableHead>
 
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                    <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
                       RUT
-                    </th>
+                    </TableHead>
 
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                    <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
                       Estado
-                    </th>
+                    </TableHead>
 
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-slate-700">
+                    <TableHead className="px-6 py-4 text-right text-sm font-semibold text-slate-700">
                       Acciones
-                    </th>
-                  </tr>
-                </thead>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
 
-                <tbody className="divide-y">
+                <TableBody className="divide-y">
                   {customers.map((customer) => (
-                    <tr key={customer.id} className="hover:bg-slate-50">
-                      <td className="px-6 py-4">
+                    <TableRow key={customer.id} className="hover:bg-slate-50">
+                      <TableCell className="px-6 py-4">
                         <div className="font-medium text-slate-900">
                           {customer.name}
                         </div>
@@ -292,23 +302,23 @@ export function CustomersPage() {
                         <div className="text-sm text-slate-500">
                           {customer.email ?? "Sin email"}
                         </div>
-                      </td>
+                      </TableCell>
 
-                      <td className="px-6 py-4 text-sm text-slate-600">
+                      <TableCell className="px-6 py-4 text-sm text-slate-600">
                         {customer.companyName ?? "-"}
-                      </td>
+                      </TableCell>
 
-                      <td className="px-6 py-4">
+                      <TableCell className="px-6 py-4">
                         <div className="text-sm text-slate-600">
                           {customer.phone ?? "Sin teléfono"}
                         </div>
-                      </td>
+                      </TableCell>
 
-                      <td className="px-6 py-4 text-sm text-slate-600">
+                      <TableCell className="px-6 py-4 text-sm text-slate-600">
                         {customer.taxId ?? "-"}
-                      </td>
+                      </TableCell>
 
-                      <td className="px-6 py-4">
+                      <TableCell className="px-6 py-4">
                         <span
                           className={
                             customer.status === "ACTIVE"
@@ -318,9 +328,9 @@ export function CustomersPage() {
                         >
                           {customer.status === "ACTIVE" ? "Activo" : "Inactivo"}
                         </span>
-                      </td>
+                      </TableCell>
 
-                      <td className="px-6 py-4">
+                      <TableCell className="px-6 py-4">
                         <div className="flex justify-end gap-3">
                           <button
                             type="button"
@@ -341,11 +351,11 @@ export function CustomersPage() {
                               : "Activar"}
                           </button>
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
 
             {data?.meta && (

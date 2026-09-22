@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Button, Input, Select } from "../../../components/ui";
+import { Input, Select } from "../../../components/ui";
 
 import type { GarmentFilters as GarmentFiltersType } from "../../../types";
 
@@ -81,13 +81,13 @@ export function GarmentFilters({ filters, onChange }: GarmentFiltersProps) {
         </div>
 
         {hasActiveFilters && (
-          <Button
+          <button
             type="button"
             onClick={clear}
             className="self-start text-sm font-medium text-indigo-600 hover:text-indigo-800 sm:self-auto"
           >
             Limpiar filtros
-          </Button>
+          </button>
         )}
       </div>
 

@@ -19,7 +19,17 @@ import type {
 import type { GarmentFormData } from "../schemas/garment.schema";
 
 import { Pagination } from "../../../components/ui/Pagination";
-import { ConfirmDialog, useToast } from "../../../components/ui";
+import {
+  Button,
+  ConfirmDialog,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  useToast,
+} from "../../../components/ui";
 
 import { getApiErrorMessage } from "../../../lib/getApiErrorMessage";
 
@@ -217,13 +227,13 @@ export function GarmentsPage() {
           </p>
         </div>
 
-        <button
+        <Button
           type="button"
           onClick={openCreateForm}
           className="rounded-lg bg-indigo-600 px-4 py-2.5 font-medium text-white transition hover:bg-indigo-700"
         >
           + Nueva prenda
-        </button>
+        </Button>
       </div>
 
       <GarmentFilters filters={filters} onChange={handleFiltersChange} />
@@ -258,41 +268,41 @@ export function GarmentsPage() {
         ) : (
           <>
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="border-b bg-slate-50">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+              <Table className="w-full">
+                <TableHeader className="border-b bg-slate-50">
+                  <TableRow>
+                    <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
                       Prenda
-                    </th>
+                    </TableHead>
 
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                    <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
                       Descripción
-                    </th>
+                    </TableHead>
 
-                    <th className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                    <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
                       Estado
-                    </th>
+                    </TableHead>
 
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-slate-700">
+                    <TableHead className="px-6 py-4 text-right text-sm font-semibold text-slate-700">
                       Acciones
-                    </th>
-                  </tr>
-                </thead>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
 
-                <tbody className="divide-y">
+                <TableBody className="divide-y">
                   {garments.map((garment) => (
-                    <tr key={garment.id} className="hover:bg-slate-50">
-                      <td className="px-6 py-4">
+                    <TableRow key={garment.id} className="hover:bg-slate-50">
+                      <TableCell className="px-6 py-4">
                         <div className="font-medium text-slate-900">
                           {garment.name}
                         </div>
-                      </td>
+                      </TableCell>
 
-                      <td className="px-6 py-4 text-sm text-slate-600">
+                      <TableCell className="px-6 py-4 text-sm text-slate-600">
                         {garment.description ?? "-"}
-                      </td>
+                      </TableCell>
 
-                      <td className="px-6 py-4">
+                      <TableCell className="px-6 py-4">
                         <span
                           className={
                             garment.active
@@ -302,9 +312,9 @@ export function GarmentsPage() {
                         >
                           {garment.active ? "Activa" : "Inactiva"}
                         </span>
-                      </td>
+                      </TableCell>
 
-                      <td className="px-6 py-4">
+                      <TableCell className="px-6 py-4">
                         <div className="flex justify-end gap-3">
                           <button
                             type="button"
@@ -323,11 +333,11 @@ export function GarmentsPage() {
                             {garment.active ? "Desactivar" : "Activar"}
                           </button>
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
 
             {data?.meta && (

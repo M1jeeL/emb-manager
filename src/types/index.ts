@@ -15,3 +15,19 @@ export type {
   UpdateGarmentPayload,
   UpdateGarmentStatusPayload,
 } from "./garment";
+
+export type {
+  CreateLogoPayload,
+  Logo,
+  LogoFile,
+  LogoFileType,
+  LogoFilters,
+  LogoListResponse,
+  LogoPriceHistory,
+  LogoStatus,
+  LogoVersion,
+  UpdateLogoPayload,
+  CreateLogoFilePayload,
+  CreateLogoVersionPayload,
+  LogoFileDownloadResponse,
+} from "./logos";
