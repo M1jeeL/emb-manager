@@ -6,8 +6,8 @@ import {
   useDeleteLogoFile,
   useDownloadLogoFile,
 } from "../../../hooks/useLogos";
-import { Button } from "../../../components/ui";
-
+import { Button, ConfirmDialog, useToast } from "../../../components/ui";
+import { getApiErrorMessage } from "../../../lib/getApiErrorMessage";
 interface LogoFileCardProps {
   logoId: string;
   versionId: string;
@@ -41,10 +41,13 @@ function isImage(file: LogoFile) {
 export function LogoFileCard({ logoId, versionId, file }: LogoFileCardProps) {
   const downloadFile = useDownloadLogoFile();
   const deleteFile = useDeleteLogoFile();
+  const toast = useToast();
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-
   const [previewOpen, setPreviewOpen] = useState(false);
+
+  const [openConfirmDelete, setOpenConfirmDelete] = useState<boolean>(false);
+  const [isLoadingDelete, setIsLoadingDelete] = useState<boolean>(false);
 
   const handleDownload = async () => {
     const result = await downloadFile.mutateAsync({
@@ -81,17 +84,23 @@ export function LogoFileCard({ logoId, versionId, file }: LogoFileCardProps) {
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(`¿Eliminar "${file.fileName}"?`);
-
-    if (!confirmed) {
-      return;
+    setIsLoadingDelete(true);
+    try {
+      await deleteFile.mutateAsync({
+        logoId,
+        versionId,
+        fileId: file.id,
+      });
+      toast.success(
+        "Archivo eliminado",
+        "Se ha eliminado el archivo correctamente",
+      );
+    } catch (error) {
+      const message = getApiErrorMessage(error);
+      toast.error("No se pudo completar la acción", message);
     }
-
-    await deleteFile.mutateAsync({
-      logoId,
-      versionId,
-      fileId: file.id,
-    });
+    setOpenConfirmDelete(false);
+    setIsLoadingDelete(false);
   };
 
   return (
@@ -166,7 +175,7 @@ export function LogoFileCard({ logoId, versionId, file }: LogoFileCardProps) {
           <Button
             type="button"
             variant="danger"
-            onClick={handleDelete}
+            onClick={() => setOpenConfirmDelete(true)}
             disabled={deleteFile.isPending}
             className="rounded-lg border border-red-200 px-3 py-1.5 text-xs text-red-600"
           >
@@ -174,6 +183,21 @@ export function LogoFileCard({ logoId, versionId, file }: LogoFileCardProps) {
           </Button>
         </div>
       </div>
+      {openConfirmDelete && (
+        <ConfirmDialog
+          open={openConfirmDelete !== null}
+          onClose={() => {
+            setOpenConfirmDelete(false);
+          }}
+          onConfirm={handleDelete}
+          title="Eliminar archivo"
+          description="¿Estás seguro que quieres eliminar el archivo seleccionado?"
+          confirmLabel="Eliminar"
+          cancelLabel="Cancelar"
+          danger
+          loading={isLoadingDelete}
+        />
+      )}
 
       {previewOpen && previewUrl && (
         <div

@@ -3,6 +3,9 @@ import { useState } from "react";
 import type { LogoFileType } from "../../../types";
 
 import { useUploadLogoFile } from "../../../hooks/useLogos";
+import { useToast } from "../../../components/ui";
+
+import { getApiErrorMessage } from "../../../lib/getApiErrorMessage";
 
 interface UploadLogoFileDialogProps {
   logoId: string;
@@ -18,7 +21,7 @@ export function UploadLogoFileDialog({
   onClose,
 }: UploadLogoFileDialogProps) {
   const uploadFile = useUploadLogoFile();
-
+  const toast = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [type, setType] = useState<LogoFileType>("IMAGE");
   const [format, setFormat] = useState("");
@@ -60,12 +63,12 @@ export function UploadLogoFileDialog({
       setType("IMAGE");
       setFormat("");
       setIsPrimary(false);
-
+      toast.success("Archivo subido", "El archivo se subió correctamente");
       onClose();
     } catch (error) {
-      setError(
-        error instanceof Error ? error.message : "No se pudo subir el archivo.",
-      );
+      const message = getApiErrorMessage(error);
+      setError(message);
+      toast.error("No se pudo completar la acción", message);
     }
   };
 

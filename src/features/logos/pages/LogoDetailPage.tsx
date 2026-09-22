@@ -7,7 +7,8 @@ import { LogoStatusBadge } from "../components/LogoStatusBadge";
 import { LogoVersionCard } from "../components/LogoVersionCard";
 import { LogoPriceHistory } from "../components/LogoPriceHistory";
 import { CreateVersionDialog } from "../components/CreateVersionDialog";
-import { Button } from "../../../components/ui";
+import { Button, ConfirmDialog, useToast } from "../../../components/ui";
+import { getApiErrorMessage } from "../../../lib/getApiErrorMessage";
 
 function formatPrice(value: string) {
   return new Intl.NumberFormat("es-CL", {
@@ -27,10 +28,10 @@ function formatDate(value: string) {
 export function LogoDetailPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
-
+  const toast = useToast();
   const logoQuery = useLogo(id);
   const changeStatus = useChangeLogoStatus();
-
+  const [openConfirmArchive, setOpenConfirmArchive] = useState<boolean>(false);
   const [createVersionOpen, setCreateVersionOpen] = useState(false);
 
   if (logoQuery.isLoading) {
@@ -73,20 +74,21 @@ export function LogoDetailPage() {
   const handleChangeStatus = async () => {
     const nextStatus = logo.status === "ACTIVE" ? "ARCHIVED" : "ACTIVE";
 
-    const confirmed = window.confirm(
-      nextStatus === "ARCHIVED"
-        ? "¿Quieres archivar este logo?"
-        : "¿Quieres activar este logo nuevamente?",
-    );
-
-    if (!confirmed) {
-      return;
+    try {
+      await changeStatus.mutateAsync({
+        id: logo.id,
+        status: nextStatus,
+      });
+      toast.success(
+        `Logo ${nextStatus === "ARCHIVED" ? "archivado" : "activado"}`,
+        `${logo.name} fue ${
+          nextStatus === "ARCHIVED" ? "archivado" : "activado"
+        } correctamente.`,
+      );
+    } catch (error) {
+      toast.error("No se pudo completar la acción", getApiErrorMessage(error));
     }
-
-    await changeStatus.mutateAsync({
-      id: logo.id,
-      status: nextStatus,
-    });
+    setOpenConfirmArchive(false);
   };
 
   return (
@@ -126,8 +128,8 @@ export function LogoDetailPage() {
 
           <Button
             type="button"
-            variant="muted"
-            onClick={handleChangeStatus}
+            variant={logo.status === "ACTIVE" ? "warning" : "success"}
+            onClick={() => setOpenConfirmArchive(true)}
             disabled={changeStatus.isPending}
             className="rounded-lg px-4 py-2 text-sm"
           >
@@ -245,6 +247,24 @@ export function LogoDetailPage() {
           ))
         )}
       </section>
+
+      {openConfirmArchive && (
+        <ConfirmDialog
+          open={openConfirmArchive !== null}
+          onClose={() => {
+            setOpenConfirmArchive(false);
+          }}
+          onConfirm={handleChangeStatus}
+          title={`${logo.status === "ACTIVE" ? "Archivar" : "Activar"} logo`}
+          description={`¿Estás seguro de que quieres ${
+            logo.status === "ACTIVE" ? "archivar" : "activar"
+          } "${logo.name}"?`}
+          confirmLabel={logo.status === "ACTIVE" ? "Archivar" : "Activar"}
+          cancelLabel="Cancelar"
+          danger={logo.status === "ACTIVE"}
+          loading={changeStatus.isPending}
+        />
+      )}
 
       {/* Historial */}
       <LogoPriceHistory history={logo.priceHistory} />

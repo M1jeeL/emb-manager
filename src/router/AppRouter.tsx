@@ -8,7 +8,7 @@ import { Spinner } from "../components/ui";
 import { GarmentsPage } from "../features/garments/pages/GarmentPage";
 import { LogosPage } from "../features/logos/pages/LogosPage";
 import { LogoCreatePage } from "../features/logos/pages/LogoCreatePage";
-import { LogoDetailPage } from "../features/logos/components/LogoDetailPage";
+import { LogoDetailPage } from "../features/logos/pages/LogoDetailPage";
 import { LogoEditPage } from "../features/logos/pages/LogoEditPage";
 
 export function AppRouter() {
