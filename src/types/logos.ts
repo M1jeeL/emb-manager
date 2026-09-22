@@ -6,20 +6,25 @@ export interface Logo {
   id: string;
   organizationId: string;
   customerId: string | null;
-
   name: string;
   description: string | null;
-
   status: LogoStatus;
   currentPrice: string;
-
   createdAt: string;
   updatedAt: string;
-
   customer: {
     id: string;
     name: string;
   } | null;
+}
+
+export interface LogoDetail extends Logo {
+  versions: LogoVersion[];
+  priceHistory: LogoPriceHistory[];
+  _count: {
+    versions: number;
+    orderItemLogos: number;
+  };
 }
 
 export interface LogoListResponse {

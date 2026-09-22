@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import { formatRut } from "../../../lib/utils";
 import type { CustomerFilters as CustomerFiltersType } from "../../../types";
 
@@ -11,21 +10,6 @@ interface CustomerFiltersProps {
 export function CustomerFilters({ filters, onChange }: CustomerFiltersProps) {
   const [localFilters, setLocalFilters] =
     useState<CustomerFiltersType>(filters);
-
-  /**
-   * Debounce para los filtros de texto.
-   *
-   * Mientras el usuario escribe:
-   *
-   * j
-   * ju
-   * jua
-   * juan
-   *
-   * NO hacemos peticiones.
-   *
-   * Esperamos 400ms después de que deje de escribir.
-   */
   useEffect(() => {
     const timeout = setTimeout(() => {
       const textFilters = {
@@ -106,12 +90,10 @@ export function CustomerFilters({ filters, onChange }: CustomerFiltersProps) {
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="font-semibold text-slate-900">Filtros</h2>
-
           <p className="text-sm text-slate-500">
             Busca clientes utilizando uno o varios criterios.
           </p>
         </div>
-
         {hasActiveFilters && (
           <button
             type="button"
@@ -122,13 +104,11 @@ export function CustomerFilters({ filters, onChange }: CustomerFiltersProps) {
           </button>
         )}
       </div>
-
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-700">
             Nombre
           </label>
-
           <input
             value={localFilters.name ?? ""}
             onChange={(event) => updateTextFilter("name", event.target.value)}
@@ -136,7 +116,6 @@ export function CustomerFilters({ filters, onChange }: CustomerFiltersProps) {
             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
           />
         </div>
-
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-700">
             Empresa
@@ -151,12 +130,10 @@ export function CustomerFilters({ filters, onChange }: CustomerFiltersProps) {
             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
           />
         </div>
-
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-700">
             Teléfono
           </label>
-
           <input
             value={localFilters.phone ?? ""}
             onChange={(event) => updateTextFilter("phone", event.target.value)}
@@ -164,7 +141,6 @@ export function CustomerFilters({ filters, onChange }: CustomerFiltersProps) {
             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
           />
         </div>
-
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-700">
             Email
@@ -177,12 +153,10 @@ export function CustomerFilters({ filters, onChange }: CustomerFiltersProps) {
             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
           />
         </div>
-
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-700">
             RUT
           </label>
-
           <input
             value={localFilters.taxId ?? ""}
             onChange={(event) =>
@@ -192,12 +166,10 @@ export function CustomerFilters({ filters, onChange }: CustomerFiltersProps) {
             className="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
           />
         </div>
-
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-700">
             Estado
           </label>
-
           <select
             value={localFilters.status ?? ""}
             onChange={(event) =>

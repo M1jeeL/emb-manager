@@ -6,6 +6,10 @@ import { CustomersPage } from "../features/customers/pages/CustomersPage";
 import { AppLayout } from "../components/layout";
 import { Spinner } from "../components/ui";
 import { GarmentsPage } from "../features/garments/pages/GarmentPage";
+import { LogosPage } from "../features/logos/pages/LogosPage";
+import { LogoCreatePage } from "../features/logos/pages/LogoCreatePage";
+import { LogoDetailPage } from "../features/logos/components/LogoDetailPage";
+import { LogoEditPage } from "../features/logos/pages/LogoEditPage";
 
 export function AppRouter() {
   return (
@@ -19,7 +23,10 @@ export function AppRouter() {
           <Route path="/orders" element={<Spinner />} />
           <Route path="/production" element={<Spinner />} />
           <Route path="/garments" element={<GarmentsPage />} />
-          <Route path="/logos" element={<Spinner />} />
+          <Route path="/logos" element={<LogosPage />} />
+          <Route path="/logos/new" element={<LogoCreatePage />} />
+          <Route path="/logos/:id" element={<LogoDetailPage />} />
+          <Route path="/logos/:id/edit" element={<LogoEditPage />} />
           <Route path="/employees" element={<Spinner />} />
           <Route path="/machines" element={<Spinner />} />
           <Route path="/payments" element={<Spinner />} />

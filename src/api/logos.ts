@@ -12,6 +12,7 @@ import type {
   LogoVersion,
   UpdateLogoPayload,
   LogoFileDownloadResponse,
+  LogoDetail,
 } from "../types";
 
 function buildQuery(filters: LogoFilters = {}) {
@@ -48,7 +49,7 @@ export const logosApi = {
   },
 
   findOne(id: string) {
-    return apiRequest<Logo>(`/logos/${id}`);
+    return apiRequest<LogoDetail>(`/logos/${id}`);
   },
 
   create(payload: CreateLogoPayload) {

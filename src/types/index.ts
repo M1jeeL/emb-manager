@@ -19,6 +19,7 @@ export type {
 export type {
   CreateLogoPayload,
   Logo,
+  LogoDetail,
   LogoFile,
   LogoFileType,
   LogoFilters,

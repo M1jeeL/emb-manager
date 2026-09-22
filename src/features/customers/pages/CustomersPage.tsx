@@ -218,7 +218,6 @@ export function CustomersPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Clientes</h1>
-
           <p className="mt-1 text-sm text-slate-500">
             Gestiona los clientes y sus datos de contacto.
           </p>
@@ -231,10 +230,8 @@ export function CustomersPage() {
           + Nuevo cliente
         </Button>
       </div>
-
       {/* Filtros */}
       <CustomerFilters filters={filters} onChange={handleFiltersChange} />
-
       {/* Resultados */}
       <div className="overflow-hidden rounded-xl bg-white shadow-sm">
         {isLoading ? (
@@ -254,7 +251,6 @@ export function CustomersPage() {
             <h3 className="font-semibold text-slate-900">
               No encontramos clientes
             </h3>
-
             <p className="mt-1 text-sm text-slate-500">
               Prueba cambiando los filtros o registra un nuevo cliente.
             </p>
@@ -268,29 +264,23 @@ export function CustomersPage() {
                     <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
                       Cliente
                     </TableHead>
-
                     <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
                       Empresa
                     </TableHead>
-
                     <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
                       Contacto
                     </TableHead>
-
                     <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
                       RUT
                     </TableHead>
-
                     <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
                       Estado
                     </TableHead>
-
                     <TableHead className="px-6 py-4 text-right text-sm font-semibold text-slate-700">
                       Acciones
                     </TableHead>
                   </TableRow>
                 </TableHeader>
-
                 <TableBody className="divide-y">
                   {customers.map((customer) => (
                     <TableRow key={customer.id} className="hover:bg-slate-50">
@@ -298,26 +288,21 @@ export function CustomersPage() {
                         <div className="font-medium text-slate-900">
                           {customer.name}
                         </div>
-
                         <div className="text-sm text-slate-500">
                           {customer.email ?? "Sin email"}
                         </div>
                       </TableCell>
-
                       <TableCell className="px-6 py-4 text-sm text-slate-600">
                         {customer.companyName ?? "-"}
                       </TableCell>
-
                       <TableCell className="px-6 py-4">
                         <div className="text-sm text-slate-600">
                           {customer.phone ?? "Sin teléfono"}
                         </div>
                       </TableCell>
-
                       <TableCell className="px-6 py-4 text-sm text-slate-600">
                         {customer.taxId ?? "-"}
                       </TableCell>
-
                       <TableCell className="px-6 py-4">
                         <span
                           className={
@@ -329,7 +314,6 @@ export function CustomersPage() {
                           {customer.status === "ACTIVE" ? "Activo" : "Inactivo"}
                         </span>
                       </TableCell>
-
                       <TableCell className="px-6 py-4">
                         <div className="flex justify-end gap-3">
                           <button
@@ -339,7 +323,6 @@ export function CustomersPage() {
                           >
                             Editar
                           </button>
-
                           <button
                             type="button"
                             onClick={() => handleChangeStatusClick(customer)}
@@ -357,7 +340,6 @@ export function CustomersPage() {
                 </TableBody>
               </Table>
             </div>
-
             {data?.meta && (
               <Pagination
                 page={data.meta.page}
@@ -404,7 +386,6 @@ export function CustomersPage() {
             loading={isLoading}
           />
         )}
-
         {isFetching && !isLoading && (
           <div className="border-t bg-slate-50 px-5 py-2 text-xs text-slate-500">
             Actualizando resultados...
@@ -420,14 +401,12 @@ export function CustomersPage() {
               <h2 className="text-xl font-bold text-slate-900">
                 {selectedCustomer ? "Editar cliente" : "Nuevo cliente"}
               </h2>
-
               <p className="mt-1 text-sm text-slate-500">
                 {selectedCustomer
                   ? "Actualiza la información del cliente."
                   : "Registra un nuevo cliente en tu organización."}
               </p>
             </div>
-
             <CustomerForm
               customer={selectedCustomer}
               loading={createCustomer.isPending || updateCustomer.isPending}
