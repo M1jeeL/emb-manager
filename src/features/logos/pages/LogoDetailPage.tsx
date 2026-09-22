@@ -6,9 +6,10 @@ import { useChangeLogoStatus, useLogo } from "../../../hooks/useLogos";
 import { LogoStatusBadge } from "../components/LogoStatusBadge";
 import { LogoVersionCard } from "../components/LogoVersionCard";
 import { LogoPriceHistory } from "../components/LogoPriceHistory";
-import { CreateVersionDialog } from "../components/CreateVersionDialog";
+import { LogoVersionDialog } from "../components/LogoVersionDialog";
 import { Button, ConfirmDialog, useToast } from "../../../components/ui";
 import { getApiErrorMessage } from "../../../lib/getApiErrorMessage";
+import type { LogoVersion } from "../../../types";
 
 function formatPrice(value: string) {
   return new Intl.NumberFormat("es-CL", {
@@ -32,7 +33,10 @@ export function LogoDetailPage() {
   const logoQuery = useLogo(id);
   const changeStatus = useChangeLogoStatus();
   const [openConfirmArchive, setOpenConfirmArchive] = useState<boolean>(false);
-  const [createVersionOpen, setCreateVersionOpen] = useState(false);
+  const [versionDialogOpen, setVersionDialogOpen] = useState(false);
+  const [editingVersion, setEditingVersion] = useState<LogoVersion | null>(
+    null,
+  );
 
   if (logoQuery.isLoading) {
     return (
@@ -214,7 +218,10 @@ export function LogoDetailPage() {
 
           <Button
             type="button"
-            onClick={() => setCreateVersionOpen(true)}
+            onClick={() => {
+              setEditingVersion(null);
+              setVersionDialogOpen(true);
+            }}
             className="rounded-lg bg-black px-4 py-2 text-sm text-white"
           >
             + Nueva versión
@@ -231,7 +238,10 @@ export function LogoDetailPage() {
 
             <Button
               type="button"
-              onClick={() => setCreateVersionOpen(true)}
+              onClick={() => {
+                setEditingVersion(null);
+                setVersionDialogOpen(true);
+              }}
               className="mt-4 rounded-lg bg-black px-4 py-2 text-sm text-white"
             >
               Crear versión
@@ -243,6 +253,10 @@ export function LogoDetailPage() {
               key={version.id}
               logoId={logo.id}
               version={version}
+              onEdit={(selectedVersion) => {
+                setEditingVersion(selectedVersion);
+                setVersionDialogOpen(true);
+              }}
             />
           ))
         )}
@@ -269,10 +283,14 @@ export function LogoDetailPage() {
       {/* Historial */}
       <LogoPriceHistory history={logo.priceHistory} />
 
-      <CreateVersionDialog
+      <LogoVersionDialog
         logoId={logo.id}
-        open={createVersionOpen}
-        onClose={() => setCreateVersionOpen(false)}
+        open={versionDialogOpen}
+        version={editingVersion}
+        onClose={() => {
+          setVersionDialogOpen(false);
+          setEditingVersion(null);
+        }}
       />
     </div>
   );

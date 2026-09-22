@@ -31,4 +31,5 @@ export type {
   CreateLogoFilePayload,
   CreateLogoVersionPayload,
   LogoFileDownloadResponse,
+  UpdateLogoVersionPayload,
 } from "./logos";

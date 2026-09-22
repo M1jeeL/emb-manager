@@ -115,3 +115,10 @@ export interface LogoFileDownloadResponse {
   mimeType: string | null;
   expiresIn: number;
 }
+
+export interface UpdateLogoVersionPayload {
+  widthMm?: string;
+  heightMm?: string;
+  stitchCount?: number;
+  notes?: string;
+}

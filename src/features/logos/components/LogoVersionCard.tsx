@@ -9,9 +9,14 @@ import { Button } from "../../../components/ui";
 interface LogoVersionCardProps {
   logoId: string;
   version: LogoVersion;
+  onEdit: (version: LogoVersion) => void;
 }
 
-export function LogoVersionCard({ logoId, version }: LogoVersionCardProps) {
+export function LogoVersionCard({
+  logoId,
+  version,
+  onEdit,
+}: LogoVersionCardProps) {
   const [uploadOpen, setUploadOpen] = useState(false);
 
   return (
@@ -49,13 +54,24 @@ export function LogoVersionCard({ logoId, version }: LogoVersionCardProps) {
             )}
           </div>
 
-          <Button
-            type="button"
-            onClick={() => setUploadOpen(true)}
-            className="rounded-lg px-4 py-2 text-sm text-white"
-          >
-            + Subir archivo
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onEdit(version)}
+              className="rounded-lg px-4 py-2 text-sm"
+            >
+              Editar
+            </Button>
+
+            <Button
+              type="button"
+              onClick={() => setUploadOpen(true)}
+              className="rounded-lg px-4 py-2 text-sm text-white"
+            >
+              + Subir archivo
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-2 p-5">

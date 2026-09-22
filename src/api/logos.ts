@@ -13,6 +13,7 @@ import type {
   UpdateLogoPayload,
   LogoFileDownloadResponse,
   LogoDetail,
+  UpdateLogoVersionPayload,
 } from "../types";
 
 function buildQuery(filters: LogoFilters = {}) {
@@ -116,6 +117,17 @@ export const logosApi = {
       message: string;
     }>(`/logos/${logoId}/versions/${versionId}/files/${fileId}`, {
       method: "DELETE",
+    });
+  },
+
+  updateVersion(
+    logoId: string,
+    versionId: string,
+    payload: UpdateLogoVersionPayload,
+  ) {
+    return apiRequest<LogoVersion>(`/logos/${logoId}/versions/${versionId}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
     });
   },
 };

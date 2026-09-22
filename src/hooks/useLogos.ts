@@ -14,6 +14,7 @@ import type {
   LogoFilters,
   LogoStatus,
   UpdateLogoPayload,
+  UpdateLogoVersionPayload,
 } from "../types";
 
 export function useLogos(filters: LogoFilters = {}) {
@@ -155,6 +156,28 @@ export function useDeleteLogoFile() {
       versionId: string;
       fileId: string;
     }) => logosApi.deleteFile(logoId, versionId, fileId),
+
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["logos", variables.logoId],
+      });
+    },
+  });
+}
+
+export function useUpdateLogoVersion() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      logoId,
+      versionId,
+      payload,
+    }: {
+      logoId: string;
+      versionId: string;
+      payload: UpdateLogoVersionPayload;
+    }) => logosApi.updateVersion(logoId, versionId, payload),
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({

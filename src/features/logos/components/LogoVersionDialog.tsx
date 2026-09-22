@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
@@ -6,22 +7,39 @@ import {
   type CreateLogoVersionForm,
 } from "../schemas/logo-version.schema";
 
-import { useCreateLogoVersion } from "../../../hooks/useLogos";
+import {
+  useCreateLogoVersion,
+  useUpdateLogoVersion,
+} from "../../../hooks/useLogos";
 
-interface CreateVersionDialogProps {
+import type { LogoVersion } from "../../../types";
+
+import { Button, useToast } from "../../../components/ui";
+import { getApiErrorMessage } from "../../../lib/getApiErrorMessage";
+
+interface LogoVersionDialogProps {
   logoId: string;
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  version?: LogoVersion | null;
 }
 
-export function CreateVersionDialog({
+export function LogoVersionDialog({
   logoId,
   open,
   onClose,
   onSuccess,
-}: CreateVersionDialogProps) {
+  version = null,
+}: LogoVersionDialogProps) {
   const createVersion = useCreateLogoVersion();
+  const updateVersion = useUpdateLogoVersion();
+  const toast = useToast();
+  const isEditMode = Boolean(version);
+
+  const isPending = createVersion.isPending || updateVersion.isPending;
+
+  const mutationError = createVersion.error ?? updateVersion.error;
 
   const {
     register,
@@ -33,9 +51,34 @@ export function CreateVersionDialog({
     defaultValues: {
       widthMm: "",
       heightMm: "",
+      stitchCount: undefined,
       notes: "",
     },
   });
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    if (version) {
+      reset({
+        widthMm: version.widthMm ?? "",
+        heightMm: version.heightMm ?? "",
+        stitchCount: version.stitchCount ?? undefined,
+        notes: version.notes ?? "",
+      });
+
+      return;
+    }
+
+    reset({
+      widthMm: "",
+      heightMm: "",
+      stitchCount: undefined,
+      notes: "",
+    });
+  }, [open, version, reset]);
 
   if (!open) {
     return null;
@@ -43,24 +86,39 @@ export function CreateVersionDialog({
 
   const onSubmit = async (data: CreateLogoVersionForm) => {
     try {
-      await createVersion.mutateAsync({
-        logoId,
-        payload: {
-          widthMm: data.widthMm || undefined,
-          heightMm: data.heightMm || undefined,
-          stitchCount:
-            data.stitchCount === undefined || Number.isNaN(data.stitchCount)
-              ? undefined
-              : data.stitchCount,
-          notes: data.notes || undefined,
-        },
-      });
+      const payload = {
+        widthMm: data.widthMm || undefined,
+        heightMm: data.heightMm || undefined,
+        stitchCount:
+          data.stitchCount === undefined || Number.isNaN(data.stitchCount)
+            ? undefined
+            : data.stitchCount,
+        notes: data.notes || undefined,
+      };
+
+      if (version) {
+        await updateVersion.mutateAsync({
+          logoId,
+          versionId: version.id,
+          payload,
+        });
+        toast.success(
+          "Versión actualizada",
+          "La versión se actualizó correctamente",
+        );
+      } else {
+        await createVersion.mutateAsync({
+          logoId,
+          payload,
+        });
+        toast.success("Versión creada", "La versión se creó correctamente");
+      }
 
       reset();
       onClose();
       onSuccess?.();
     } catch {
-      // El error se muestra debajo.
+      // El error se muestra debajo del formulario.
     }
   };
 
@@ -69,11 +127,15 @@ export function CreateVersionDialog({
       <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-gray-900">
-            Crear nueva versión
+            {isEditMode
+              ? `Editar versión ${version?.version}`
+              : "Crear nueva versión"}
           </h2>
 
           <p className="mt-1 text-sm text-gray-500">
-            Agrega las características de la nueva versión del logo.
+            {isEditMode
+              ? "Actualiza las características de esta versión del logo."
+              : "Agrega las características de la nueva versión del logo."}
           </p>
         </div>
 
@@ -155,27 +217,36 @@ export function CreateVersionDialog({
             )}
           </div>
 
-          {createVersion.isError && (
-            <p className="text-sm text-red-600">No se pudo crear la versión.</p>
+          {mutationError && (
+            <p className="text-sm text-red-600">
+              {getApiErrorMessage(mutationError)}
+            </p>
           )}
 
           <div className="flex justify-end gap-3 pt-4">
-            <button
+            <Button
               type="button"
+              variant="outline"
               onClick={onClose}
-              disabled={createVersion.isPending}
-              className="rounded-lg border px-4 py-2 text-sm"
+              disabled={isPending}
+              className="rounded-lg px-4 py-2 text-sm"
             >
               Cancelar
-            </button>
+            </Button>
 
-            <button
+            <Button
               type="submit"
-              disabled={createVersion.isPending}
+              disabled={isPending}
               className="rounded-lg bg-black px-4 py-2 text-sm text-white disabled:opacity-50"
             >
-              {createVersion.isPending ? "Creando..." : "Crear versión"}
-            </button>
+              {isPending
+                ? isEditMode
+                  ? "Guardando..."
+                  : "Creando..."
+                : isEditMode
+                  ? "Guardar cambios"
+                  : "Crear versión"}
+            </Button>
           </div>
         </form>
       </div>
