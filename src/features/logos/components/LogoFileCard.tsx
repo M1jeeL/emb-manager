@@ -144,7 +144,7 @@ export function LogoFileCard({ logoId, versionId, file }: LogoFileCardProps) {
           </div>
 
           <p className="mt-1 text-xs text-gray-500">
-            {file.type === "IMAGE" ? "Imagen" : "Bordado"} · {file.format} ·{" "}
+            Archivo de {file.type === "IMAGE" ? "Imagen" : "Bordado"} · {file.format} ·{" "}
             {formatFileSize(file.fileSize)}
           </p>
         </div>
