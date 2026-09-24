@@ -1,4 +1,4 @@
-import type { OrderStatus } from "../../types/order";
+import type { OrderStatus } from "../../../types";
 
 interface OrderSummaryProps {
   itemCount: number;
