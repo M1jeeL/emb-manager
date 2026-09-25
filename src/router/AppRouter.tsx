@@ -11,6 +11,7 @@ import { LogoCreatePage } from "../features/logos/pages/LogoCreatePage";
 import { LogoDetailPage } from "../features/logos/pages/LogoDetailPage";
 import { LogoEditPage } from "../features/logos/pages/LogoEditPage";
 import { CreateOrderPage } from "../features/orders/pages/CreateOrderPage";
+import { OrderDetailPage } from "../features/orders/pages/OrderDetailPage";
 
 export function AppRouter() {
   return (
@@ -23,6 +24,7 @@ export function AppRouter() {
           <Route path="/customers" element={<CustomersPage />} />
           <Route path="/orders" element={<Spinner />} />
           <Route path="/orders/new" element={<CreateOrderPage />} />
+          <Route path="/orders/:id" element={<OrderDetailPage />} />
           <Route path="/production" element={<Spinner />} />
           <Route path="/garments" element={<GarmentsPage />} />
           <Route path="/logos" element={<LogosPage />} />
