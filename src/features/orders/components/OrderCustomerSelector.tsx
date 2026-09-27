@@ -6,11 +6,8 @@ import type { Customer, CustomerFilters } from "../../../types";
 
 interface OrderCustomerSelectorProps {
   value: Customer | null;
-
   onChange: (customer: Customer | null) => void;
-
-  onCreateNew: (name: string) => void;
-
+  onCreateNew?: (name: string) => void;
   disabled?: boolean;
 }
 
@@ -35,7 +32,6 @@ export function OrderCustomerSelector({
     }),
     [search],
   );
-
   const { data, isLoading, isFetching, isError } = useCustomers(filters);
 
   const customers = data?.data ?? [];
@@ -159,7 +155,7 @@ export function OrderCustomerSelector({
             )}
           </div>
 
-          {trimmedSearch && !exactMatch && (
+          {onCreateNew && trimmedSearch && !exactMatch && (
             <button
               type="button"
               onClick={() => {

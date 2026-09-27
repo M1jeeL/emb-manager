@@ -12,6 +12,7 @@ import { LogoDetailPage } from "../features/logos/pages/LogoDetailPage";
 import { LogoEditPage } from "../features/logos/pages/LogoEditPage";
 import { CreateOrderPage } from "../features/orders/pages/CreateOrderPage";
 import { OrderDetailPage } from "../features/orders/pages/OrderDetailPage";
+import { OrdersPage } from "../features/orders/pages/OrdersPage";
 
 export function AppRouter() {
   return (
@@ -22,7 +23,7 @@ export function AppRouter() {
         <Route element={<AppLayout />}>
           <Route path="/" element={<Spinner />} />
           <Route path="/customers" element={<CustomersPage />} />
-          <Route path="/orders" element={<Spinner />} />
+          <Route path="/orders" element={<OrdersPage />} />
           <Route path="/orders/new" element={<CreateOrderPage />} />
           <Route path="/orders/:id" element={<OrderDetailPage />} />
           <Route path="/production" element={<Spinner />} />

@@ -12,15 +12,15 @@ import type {
 function buildQueryString(filters: OrderFilters = {}) {
   const params = new URLSearchParams();
 
-  if (filters.page !== undefined) {
+  if (filters.page) {
     params.set("page", String(filters.page));
   }
 
-  if (filters.limit !== undefined) {
+  if (filters.limit) {
     params.set("limit", String(filters.limit));
   }
 
-  if (filters.orderNumber !== undefined) {
+  if (filters.orderNumber) {
     params.set("orderNumber", String(filters.orderNumber));
   }
 

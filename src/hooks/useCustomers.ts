@@ -22,6 +22,14 @@ export function useCustomers(filters: CustomerFilters = {}) {
   });
 }
 
+export function useCustomer(id?: string) {
+  return useQuery({
+    queryKey: ["customers", "detail", id],
+    queryFn: () => customersApi.findOne(id!),
+    enabled: Boolean(id),
+  });
+}
+
 export function useCreateCustomer() {
   const queryClient = useQueryClient();
 

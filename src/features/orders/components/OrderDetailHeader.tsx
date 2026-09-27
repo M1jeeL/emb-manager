@@ -2,7 +2,7 @@ import { useMemo } from "react";
 
 import type { OrderDetail, OrderStatus } from "../../../types";
 
-import { OrderPaymentBadge } from "./OrderPaymenBadge";
+import { OrderPaymentBadge } from "./OrderPaymentBadge";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 
 interface OrderDetailHeaderProps {
