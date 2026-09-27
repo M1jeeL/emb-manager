@@ -13,6 +13,7 @@ import { LogoEditPage } from "../features/logos/pages/LogoEditPage";
 import { CreateOrderPage } from "../features/orders/pages/CreateOrderPage";
 import { OrderDetailPage } from "../features/orders/pages/OrderDetailPage";
 import { OrdersPage } from "../features/orders/pages/OrdersPage";
+import { EmployeesPage } from "../features/employees/pages/EmployeesPage";
 
 export function AppRouter() {
   return (
@@ -32,7 +33,7 @@ export function AppRouter() {
           <Route path="/logos/new" element={<LogoCreatePage />} />
           <Route path="/logos/:id" element={<LogoDetailPage />} />
           <Route path="/logos/:id/edit" element={<LogoEditPage />} />
-          <Route path="/employees" element={<Spinner />} />
+          <Route path="/employees" element={<EmployeesPage />} />
           <Route path="/machines" element={<Spinner />} />
           <Route path="/payments" element={<Spinner />} />
           <Route path="/reports" element={<Spinner />} />

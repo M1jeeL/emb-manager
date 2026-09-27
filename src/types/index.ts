@@ -60,3 +60,14 @@ export type {
   OrderListCustomer,
   OrderStatusHistoryUser,
 } from "./orders";
+
+export type {
+  ChangeEmployeeStatusPayload,
+  CreateEmployeePayload,
+  Employee,
+  EmployeeFilters,
+  EmployeeListResponse,
+  EmployeeStatus,
+  EmployeeUser,
+  UpdateEmployeePayload,
+} from "./employees";
