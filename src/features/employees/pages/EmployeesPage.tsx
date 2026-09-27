@@ -292,22 +292,36 @@ export function EmployeesPage() {
           <>
             <div className="overflow-x-auto">
               <Table className="w-full">
-                <TableHeader>
+                <TableHeader className="border-b bg-slate-50">
                   <TableRow>
-                    <TableHead>Empleado</TableHead>
-                    <TableHead>Contacto</TableHead>
-                    <TableHead>Cargo</TableHead>
-                    <TableHead>Usuario</TableHead>
-                    <TableHead>Producción</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
+                    <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                      Empleado
+                    </TableHead>
+                    <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                      Contacto
+                    </TableHead>
+                    <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                      Cargo
+                    </TableHead>
+                    <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                      Usuario
+                    </TableHead>
+                    <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                      Producción
+                    </TableHead>
+                    <TableHead className="px-6 py-4 text-left text-sm font-semibold text-slate-700">
+                      Estado
+                    </TableHead>
+                    <TableHead className="px-6 py-4 text-right text-sm font-semibold text-slate-700">
+                      Acciones
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
 
-                <TableBody>
+                <TableBody className="divide-y">
                   {employees.map((employee) => (
-                    <TableRow key={employee.id}>
-                      <TableCell>
+                    <TableRow key={employee.id} className="hover:bg-slate-50">
+                      <TableCell className="px-6 py-4">
                         <div>
                           <p className="font-medium text-slate-900">
                             {employee.firstName} {employee.lastName}
@@ -321,7 +335,7 @@ export function EmployeesPage() {
                         </div>
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell className="px-6 py-4">
                         <div className="space-y-0.5 text-sm">
                           {employee.email && (
                             <p className="text-slate-700">{employee.email}</p>
@@ -337,13 +351,13 @@ export function EmployeesPage() {
                         </div>
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell className="px-6 py-4">
                         <span className="text-sm text-slate-700">
                           {employee.position || "Sin cargo"}
                         </span>
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell className="px-6 py-4">
                         {employee.user ? (
                           <div>
                             <p className="text-sm font-medium text-slate-900">
@@ -361,13 +375,13 @@ export function EmployeesPage() {
                         )}
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell className="px-6 py-4">
                         <span className="text-sm text-slate-700">
                           {employee._count.productionJobs}
                         </span>
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell className="px-6 py-4">
                         <span
                           className={
                             employee.status === "ACTIVE"
@@ -379,12 +393,12 @@ export function EmployeesPage() {
                         </span>
                       </TableCell>
 
-                      <TableCell>
+                      <TableCell className="px-6 py-4">
                         <div className="flex justify-end gap-2">
                           <button
                             type="button"
                             onClick={() => openEditForm(employee)}
-                            className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                            className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
                           >
                             Editar
                           </button>
@@ -392,11 +406,7 @@ export function EmployeesPage() {
                           <button
                             type="button"
                             onClick={() => handleChangeStatusClick(employee)}
-                            className={
-                              employee.status === "ACTIVE"
-                                ? "rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
-                                : "rounded-lg border border-emerald-200 px-3 py-1.5 text-sm font-medium text-emerald-600 transition hover:bg-emerald-50"
-                            }
+                            className="text-sm font-medium text-slate-600 hover:text-slate-900 disabled:opacity-50"
                           >
                             {employee.status === "ACTIVE"
                               ? "Desactivar"

@@ -82,7 +82,7 @@ export function OrderFilters({
 }: OrderFiltersProps) {
   const [localOrderNumber, setLocalOrderNumber] = useState(
     filters.orderNumber ? String(filters.orderNumber) : "",
-  )
+  );
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -159,11 +159,11 @@ export function OrderFilters({
 
   return (
     <div className="rounded-xl bg-white p-5 shadow-sm">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <div>
           <h2 className="font-semibold text-slate-900">Filtros</h2>
 
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="text-sm text-slate-500">
             Busca pedidos utilizando uno o varios criterios.
           </p>
         </div>
@@ -172,7 +172,7 @@ export function OrderFilters({
           <button
             type="button"
             onClick={clearFilters}
-            className="text-sm font-medium text-indigo-600 transition hover:text-indigo-800"
+            className="text-sm font-medium text-indigo-600 hover:text-indigo-700"
           >
             Limpiar filtros
           </button>

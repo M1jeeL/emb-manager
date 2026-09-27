@@ -1,73 +1,11 @@
-export type {
-  Customer,
-  CustomerStatus,
-  CustomerListResponse,
-  CustomerFilters,
-  CreateCustomerPayload,
-  UpdateCustomerPayload,
-} from "./customer";
+export type * from "./customer";
 
-export type {
-  Garment,
-  GarmentListResponse,
-  GarmentFilters,
-  CreateGarmentPayload,
-  UpdateGarmentPayload,
-  UpdateGarmentStatusPayload,
-} from "./garment";
+export type * from "./garment";
 
-export type {
-  CreateLogoPayload,
-  Logo,
-  LogoDetail,
-  LogoFile,
-  LogoFileType,
-  LogoFilters,
-  LogoListResponse,
-  LogoPriceHistory,
-  LogoStatus,
-  LogoVersion,
-  UpdateLogoPayload,
-  CreateLogoFilePayload,
-  CreateLogoVersionPayload,
-  LogoFileDownloadResponse,
-  UpdateLogoVersionPayload,
-} from "./logos";
+export type * from "./logos";
 
-export type {
-  ChangeOrderStatusPayload,
-  CreateOrderItemPayload,
-  CreateOrderLogoPayload,
-  CreateOrderPayload,
-  OrderCustomer,
-  OrderDetail,
-  OrderFilters,
-  OrderGarment,
-  OrderItem,
-  OrderItemStatus,
-  OrderListItem,
-  OrderListResponse,
-  OrderLogo,
-  OrderPayment,
-  OrderStatus,
-  OrderStatusHistory,
-  PaymentStatus,
-  UpdateOrderPayload,
-  NewOrderCustomer,
-  NewOrderLogo,
-  OrderCounts,
-  OrderItemLogo,
-  OrderListCustomer,
-  OrderStatusHistoryUser,
-} from "./orders";
+export type * from "./orders";
 
-export type {
-  ChangeEmployeeStatusPayload,
-  CreateEmployeePayload,
-  Employee,
-  EmployeeFilters,
-  EmployeeListResponse,
-  EmployeeStatus,
-  EmployeeUser,
-  UpdateEmployeePayload,
-} from "./employees";
+export type * from "./employees";
+
+export type * from "./machines";

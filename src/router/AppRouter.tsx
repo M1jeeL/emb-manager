@@ -14,6 +14,7 @@ import { CreateOrderPage } from "../features/orders/pages/CreateOrderPage";
 import { OrderDetailPage } from "../features/orders/pages/OrderDetailPage";
 import { OrdersPage } from "../features/orders/pages/OrdersPage";
 import { EmployeesPage } from "../features/employees/pages/EmployeesPage";
+import { MachinesPage } from "../features/machines/pages/MachinesPage";
 
 export function AppRouter() {
   return (
@@ -34,7 +35,7 @@ export function AppRouter() {
           <Route path="/logos/:id" element={<LogoDetailPage />} />
           <Route path="/logos/:id/edit" element={<LogoEditPage />} />
           <Route path="/employees" element={<EmployeesPage />} />
-          <Route path="/machines" element={<Spinner />} />
+          <Route path="/machines" element={<MachinesPage />} />
           <Route path="/payments" element={<Spinner />} />
           <Route path="/reports" element={<Spinner />} />
           <Route path="/settings" element={<Spinner />} />

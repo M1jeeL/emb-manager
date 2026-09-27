@@ -91,11 +91,11 @@ export function EmployeeFilters({ filters, onChange }: EmployeeFiltersProps) {
 
   return (
     <div className="rounded-xl bg-white p-5 shadow-sm">
-      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-sm font-semibold text-slate-900">Filtros</h2>
+          <h2 className="font-semibold text-slate-900">Filtros</h2>
 
-          <p className="text-xs text-slate-500">
+          <p className="text-sm text-slate-500">
             Busca y filtra los empleados registrados.
           </p>
         </div>
@@ -104,16 +104,16 @@ export function EmployeeFilters({ filters, onChange }: EmployeeFiltersProps) {
           <button
             type="button"
             onClick={clearFilters}
-            className="text-left text-sm font-medium text-indigo-600 hover:text-indigo-700 sm:text-right"
+            className="text-sm font-medium text-indigo-600 hover:text-indigo-700"
           >
             Limpiar filtros
           </button>
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-slate-600">
+          <label className="mb-1 block text-sm font-medium text-slate-700">
             Nombre
           </label>
 
@@ -122,12 +122,12 @@ export function EmployeeFilters({ filters, onChange }: EmployeeFiltersProps) {
             value={localName}
             onChange={(event) => setLocalName(event.target.value)}
             placeholder="Buscar empleado..."
-            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
           />
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-slate-600">
+          <label className="mb-1 block text-sm font-medium text-slate-700">
             Correo
           </label>
 
@@ -136,12 +136,12 @@ export function EmployeeFilters({ filters, onChange }: EmployeeFiltersProps) {
             value={localEmail}
             onChange={(event) => setLocalEmail(event.target.value)}
             placeholder="correo@..."
-            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
           />
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-slate-600">
+          <label className="mb-1 block text-sm font-medium text-slate-700">
             Teléfono
           </label>
 
@@ -150,12 +150,12 @@ export function EmployeeFilters({ filters, onChange }: EmployeeFiltersProps) {
             value={localPhone}
             onChange={(event) => setLocalPhone(event.target.value)}
             placeholder="+569..."
-            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
           />
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-slate-600">
+          <label className="mb-1 block text-sm font-medium text-slate-700">
             Cargo
           </label>
 
@@ -164,12 +164,12 @@ export function EmployeeFilters({ filters, onChange }: EmployeeFiltersProps) {
             value={localPosition}
             onChange={(event) => setLocalPosition(event.target.value)}
             placeholder="Ej. Bordador"
-            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
           />
         </div>
 
         <div>
-          <label className="mb-1.5 block text-xs font-medium text-slate-600">
+          <label className="mb-1 block text-sm font-medium text-slate-700">
             Estado
           </label>
 
