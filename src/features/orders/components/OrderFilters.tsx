@@ -82,8 +82,7 @@ export function OrderFilters({
 }: OrderFiltersProps) {
   const [localOrderNumber, setLocalOrderNumber] = useState(
     filters.orderNumber ? String(filters.orderNumber) : "",
-  );
-  console.log(filters);
+  )
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {

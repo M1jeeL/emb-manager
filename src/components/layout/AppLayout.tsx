@@ -40,7 +40,7 @@ export function AppLayout() {
           />
 
           <main className="min-w-0 flex-1 overflow-y-auto">
-            <div className="mx-auto w-full max-w-[1600px] px-4 py-6 pb-24 sm:px-6 lg:px-8 lg:pb-8">
+            <div className="mx-0 w-full max-w-[1600px] px-4 py-6 pb-24 sm:px-6 lg:px-8 lg:pb-8">
               <Outlet />
             </div>
           </main>

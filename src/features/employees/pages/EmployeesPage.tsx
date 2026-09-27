@@ -234,12 +234,10 @@ export function EmployeesPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Empleados</h1>
-
           <p className="mt-1 text-sm text-slate-500">
             Gestiona los empleados y responsables de producción.
           </p>
         </div>
-
         <Button
           type="button"
           onClick={openCreateForm}
@@ -293,7 +291,7 @@ export function EmployeesPage() {
         ) : (
           <>
             <div className="overflow-x-auto">
-              <Table>
+              <Table className="w-full">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Empleado</TableHead>
@@ -373,8 +371,8 @@ export function EmployeesPage() {
                         <span
                           className={
                             employee.status === "ACTIVE"
-                              ? "inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700"
-                              : "inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600"
+                              ? "rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700"
+                              : "rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600"
                           }
                         >
                           {employee.status === "ACTIVE" ? "Activo" : "Inactivo"}
@@ -413,16 +411,14 @@ export function EmployeesPage() {
             </div>
 
             {data && (
-              <div className="border-t border-slate-200 p-4">
-                <Pagination
-                  page={data.meta.page}
-                  totalPages={data.meta.totalPages}
-                  limit={data.meta.limit}
-                  total={data.meta.total}
-                  onPageChange={handlePageChange}
-                  onLimitChange={handleLimitChange}
-                />
-              </div>
+              <Pagination
+                page={data.meta.page}
+                totalPages={data.meta.totalPages}
+                limit={data.meta.limit}
+                total={data.meta.total}
+                onPageChange={handlePageChange}
+                onLimitChange={handleLimitChange}
+              />
             )}
           </>
         )}
