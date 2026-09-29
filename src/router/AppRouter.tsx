@@ -15,6 +15,7 @@ import { OrderDetailPage } from "../features/orders/pages/OrderDetailPage";
 import { OrdersPage } from "../features/orders/pages/OrdersPage";
 import { EmployeesPage } from "../features/employees/pages/EmployeesPage";
 import { MachinesPage } from "../features/machines/pages/MachinesPage";
+import { ProductionPage } from "../features/production/pages/ProductionPage";
 
 export function AppRouter() {
   return (
@@ -28,7 +29,7 @@ export function AppRouter() {
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/orders/new" element={<CreateOrderPage />} />
           <Route path="/orders/:id" element={<OrderDetailPage />} />
-          <Route path="/production" element={<Spinner />} />
+          <Route path="/production" element={<ProductionPage />} />
           <Route path="/garments" element={<GarmentsPage />} />
           <Route path="/logos" element={<LogosPage />} />
           <Route path="/logos/new" element={<LogoCreatePage />} />

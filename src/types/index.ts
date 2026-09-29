@@ -9,3 +9,5 @@ export type * from "./orders";
 export type * from "./employees";
 
 export type * from "./machines";
+
+export type * from "./production";

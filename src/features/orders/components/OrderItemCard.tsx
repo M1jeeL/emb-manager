@@ -126,9 +126,12 @@ export function OrderItemCard({
               −
             </button>
 
-            <span className="min-w-10 text-center text-sm font-semibold text-slate-900">
-              {quantity}
-            </span>
+            <input
+              type="text"
+              value={quantity}
+              onChange={(e) => onQuantityChange(Number(e.target.value))}
+              className="min-w-10 text-center text-sm font-semibold text-slate-900 "
+            />
 
             <button
               type="button"
