@@ -6,13 +6,13 @@ import { useProduction } from "../../../hooks/useProduction";
 import type {
   Employee,
   Machine,
-  OrderListItem,
+  ProductionAvailableOrder,
   ProductionJob,
 } from "../../../types";
 
 interface ProductionFormProps {
   initialData?: ProductionJob | null;
-  orders: OrderListItem[];
+  orders: ProductionAvailableOrder[];
   employees: Employee[];
   machines: Machine[];
   isSubmitting?: boolean;
@@ -412,27 +412,27 @@ export function ProductionForm({
           </div>
         ) : (
           <>
-            <select
-              id="production-order"
-              value={orderId}
-              onChange={(event) => handleOrderChange(event.target.value)}
-              disabled={isSubmitting}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-100"
-            >
-              <option value="">Selecciona un pedido</option>
-
-              {orders.map((order) => (
-                <option key={order.id} value={order.id}>
-                  #{order.orderNumber} ·{" "}
-                  {order.customer.companyName || order.customer.name}
-                </option>
-              ))}
-            </select>
-
-            {orders.length === 0 && (
-              <p className="mt-1.5 text-xs text-slate-500">
+            {orders.length === 0 ? (
+              <p className="my-1.5 text-xs text-slate-500">
                 No hay pedidos disponibles.
               </p>
+            ) : (
+              <select
+                id="production-order"
+                value={orderId}
+                onChange={(event) => handleOrderChange(event.target.value)}
+                disabled={isSubmitting || orders.length === 0}
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-100"
+              >
+                <option value="">Selecciona un pedido</option>
+
+                {orders.map((order) => (
+                  <option key={order.id} value={order.id}>
+                    #{order.orderNumber} ·{" "}
+                    {order.customer.companyName || order.customer.name}
+                  </option>
+                ))}
+              </select>
             )}
           </>
         )}

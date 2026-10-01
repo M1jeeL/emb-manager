@@ -28,6 +28,8 @@ export const productionKeys = {
   details: () => [...productionKeys.all, "detail"] as const,
 
   detail: (id: string) => [...productionKeys.details(), id] as const,
+
+  availableOrders: () => [...productionKeys.all, "available-orders"] as const,
 };
 
 export function useProduction(filters: ProductionFilters = {}, enabled = true) {
@@ -112,6 +114,10 @@ export function useChangeProductionStatus() {
       });
 
       queryClient.invalidateQueries({
+        queryKey: productionKeys.availableOrders(),
+      });
+
+      queryClient.invalidateQueries({
         queryKey: orderKeys.all,
       });
 
@@ -138,8 +144,19 @@ export function useCreateOrderProduction() {
       });
 
       queryClient.invalidateQueries({
+        queryKey: productionKeys.availableOrders(),
+      });
+
+      queryClient.invalidateQueries({
         queryKey: orderKeys.all,
       });
     },
+  });
+}
+
+export function useAvailableProductionOrders() {
+  return useQuery({
+    queryKey: productionKeys.availableOrders(),
+    queryFn: () => productionApi.findAvailableOrders(),
   });
 }

@@ -9,6 +9,7 @@ import type {
   ProductionJob,
   ProductionListResponse,
   UpdateProductionJobPayload,
+  ProductionAvailableOrder,
 } from "../types";
 
 function buildQuery(filters: ProductionFilters = {}) {
@@ -55,6 +56,12 @@ export const productionApi = {
   findAll(filters: ProductionFilters = {}) {
     return apiRequest<ProductionListResponse>(
       `/production${buildQuery(filters)}`,
+    );
+  },
+
+  findAvailableOrders() {
+    return apiRequest<ProductionAvailableOrder[]>(
+      "/production/available-orders",
     );
   },
 

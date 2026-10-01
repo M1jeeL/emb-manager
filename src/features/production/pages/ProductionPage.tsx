@@ -7,11 +7,11 @@ import {
   useCreateProductionJob,
   useProduction,
   useUpdateProductionJob,
+  useAvailableProductionOrders,
 } from "../../../hooks/useProduction";
 
 import { useEmployees } from "../../../hooks/useEmployees";
 import { useMachines } from "../../../hooks/useMachines";
-import { useOrders } from "../../../hooks/useOrders";
 
 import type {
   ProductionFilters,
@@ -78,10 +78,7 @@ export function ProductionPage() {
     status: "ACTIVE",
   });
 
-  const ordersQuery = useOrders({
-    page: 1,
-    limit: 100,
-  });
+  const availableOrdersQuery = useAvailableProductionOrders();
 
   const createProduction = useCreateProductionJob();
 
@@ -126,7 +123,10 @@ export function ProductionPage() {
     [setSearchParams],
   );
 
-  const jobs = productionQuery.data?.data ?? [];
+  const jobs = useMemo(
+    () => productionQuery.data?.data ?? [],
+    [productionQuery.data?.data],
+  );
 
   const stats = useMemo(() => {
     return {
@@ -525,33 +525,49 @@ export function ProductionPage() {
 
       {formOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
-          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold text-slate-900">
-                {editingJob ? "Editar producción" : "Nueva producción"}
-              </h2>
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl bg-white shadow-xl">
+            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">
+                  {editingJob ? "Editar producción" : "Nueva producción"}
+                </h2>
 
-              <p className="mt-1 text-sm text-slate-500">
-                {editingJob
-                  ? "Actualiza las asignaciones y datos del trabajo."
-                  : "Registra un nuevo trabajo para producción."}
-              </p>
+                <p className="mt-0.5 text-sm text-slate-500">
+                  {editingJob
+                    ? "Actualiza las asignaciones y datos del trabajo."
+                    : "Registra un nuevo trabajo para producción."}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setFormOpen(false);
+                  setEditingJob(null);
+                }}
+                disabled={isFormSubmitting}
+                className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
             </div>
-
-            <ProductionForm
-              initialData={editingJob}
-              orders={ordersQuery.data?.data ?? []}
-              employees={employeesQuery.data?.data ?? []}
-              machines={machinesQuery.data?.data ?? []}
-              isSubmitting={isFormSubmitting}
-              onSubmit={handleCreate}
-              onSubmitFullOrder={handleSubmitFullOrder}
-              onUpdate={handleUpdate}
-              onCancel={() => {
-                setFormOpen(false);
-                setEditingJob(null);
-              }}
-            />
+            <div className="p-5">
+              <ProductionForm
+                initialData={editingJob}
+                orders={availableOrdersQuery.data ?? []}
+                employees={employeesQuery.data?.data ?? []}
+                machines={machinesQuery.data?.data ?? []}
+                isSubmitting={isFormSubmitting}
+                onSubmit={handleCreate}
+                onSubmitFullOrder={handleSubmitFullOrder}
+                onUpdate={handleUpdate}
+                onCancel={() => {
+                  setFormOpen(false);
+                  setEditingJob(null);
+                }}
+              />
+            </div>
           </div>
         </div>
       )}

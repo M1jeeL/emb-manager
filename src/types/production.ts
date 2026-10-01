@@ -150,3 +150,28 @@ export interface CreateOrderProductionResponse {
   createdCount: number;
   jobs: ProductionJob[];
 }
+
+export interface ProductionAvailableOrderCustomer {
+  id: string;
+  name: string;
+  companyName: string | null;
+}
+
+export interface ProductionAvailableOrder {
+  id: string;
+  orderNumber: number;
+  promisedAt: string | null;
+  customer: ProductionAvailableOrderCustomer;
+}
+
+export interface CreateOrderProductionPayload {
+  machineId?: string;
+  employeeId?: string;
+  notes?: string;
+}
+
+export interface CreateOrderProductionResponse {
+  orderId: string;
+  createdCount: number;
+  productionJobs: ProductionJob[];
+}
