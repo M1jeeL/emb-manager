@@ -16,6 +16,7 @@ import { OrdersPage } from "../features/orders/pages/OrdersPage";
 import { EmployeesPage } from "../features/employees/pages/EmployeesPage";
 import { MachinesPage } from "../features/machines/pages/MachinesPage";
 import { ProductionPage } from "../features/production/pages/ProductionPage";
+import { PaymentsPage } from "../features/payments/pages/PaymentsPage";
 
 export function AppRouter() {
   return (
@@ -37,7 +38,7 @@ export function AppRouter() {
           <Route path="/logos/:id/edit" element={<LogoEditPage />} />
           <Route path="/employees" element={<EmployeesPage />} />
           <Route path="/machines" element={<MachinesPage />} />
-          <Route path="/payments" element={<Spinner />} />
+          <Route path="/payments" element={<PaymentsPage />} />
           <Route path="/reports" element={<Spinner />} />
           <Route path="/settings" element={<Spinner />} />
         </Route>

@@ -83,7 +83,7 @@ export function OrdersPage() {
   );
   const { data: customerFromFilter } = useCustomer(filters.customerId);
   const customerForFilter = filters.customerId
-    ? customerFromFilter ?? selectedCustomer
+    ? (customerFromFilter ?? selectedCustomer)
     : null;
 
   const { data, isLoading, isFetching, isError, error } = useOrders(filters);
