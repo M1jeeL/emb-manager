@@ -10,6 +10,7 @@ export const paymentSchema = z.object({
     .refine(
       (value) => {
         const amount = Number(value);
+
         return Number.isFinite(amount) && amount > 0;
       },
       {
@@ -19,6 +20,7 @@ export const paymentSchema = z.object({
     .refine(
       (value) => {
         const decimals = value.split(".")[1];
+
         return !decimals || decimals.length <= 2;
       },
       {
@@ -39,7 +41,9 @@ export const paymentSchema = z.object({
     .min(1, "Selecciona la fecha del pago")
     .refine(
       (value) => {
-        return new Date(value).getTime() <= Date.now();
+        const date = new Date(value);
+
+        return !Number.isNaN(date.getTime()) && date.getTime() <= Date.now();
       },
       {
         message: "La fecha del pago no puede estar en el futuro",
