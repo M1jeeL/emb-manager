@@ -69,7 +69,7 @@ export function PaymentForm({
     ? Number(selectedOrder.total) - Number(selectedOrder.paidAmount)
     : 0;
 
-  console.log(pendingAmount);
+  console.log(orders);
 
   useEffect(() => {
     if (!selectedOrder) {

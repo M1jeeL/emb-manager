@@ -9,7 +9,8 @@ interface OrderDetailHeaderProps {
   order: OrderDetail;
   onBack: () => void;
   onEdit: () => void;
-  onChangeStatus: () => void;
+  onChangeStatus: (nextStatus: OrderStatus) => void;
+  onGeneratePayment: () => void;
   disabled?: boolean;
 }
 
@@ -37,55 +38,13 @@ export function OrderDetailHeader({
   onBack,
   onEdit,
   onChangeStatus,
+  onGeneratePayment,
   disabled = false,
 }: OrderDetailHeaderProps) {
   const statusLabel = useMemo(
     () => STATUS_LABELS[order.status] ?? order.status,
     [order.status],
   );
-  // Funcion para generar un pago
-  const handleGeneratePayment = () => {
-    // Aquí puedes agregar la lógica para generar un pago
-    console.log("Generando pago para pedido:", order.orderNumber);
-  };
-
-  // Funcion para cancelar un pedido
-  const handleCancelOrder = () => {
-    // Aquí puedes agregar la lógica para cancelar un pedido
-    console.log("Cancelando pedido:", order.orderNumber);
-  };
-
-  // Funcion para aceptar una cotización
-  const handleAcceptQuote = () => {
-    // Aquí puedes agregar la lógica para aceptar una cotización
-    console.log("Aceptando cotización para pedido:", order.orderNumber);
-  };
-
-  // Funcion para empezar producción
-  const handleStartProduction = () => {
-    // Aquí puedes agregar la lógica para empezar la producción
-    console.log("Empezando producción para pedido:", order.orderNumber);
-  };
-
-  // Funcion para marcar listo el pedido
-  const handleMarkAsReady = () => {
-    // Aquí puedes agregar la lógica para marcar el pedido como listo
-    console.log("Marcando pedido como listo:", order.orderNumber);
-  };
-
-  // Funcion para despachar pedido
-  const handleDispatchOrder = () => {
-    // Aquí puedes agregar la lógica para despachar el pedido
-    console.log("Despachando pedido:", order.orderNumber);
-  };
-
-  // Funcion para rechazar una cotización
-  const handleRejectQuote = () => {
-    // Aquí puedes agregar la lógica para rechazar una cotización
-    console.log("Rechazando cotización para pedido:", order.orderNumber);
-  };
-
-  console.log(order);
 
   return (
     <div className="space-y-4">
@@ -150,19 +109,10 @@ export function OrderDetailHeader({
             Editar
           </button>
 
-          <button
-            type="button"
-            onClick={onChangeStatus}
-            disabled={disabled}
-            className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Cambiar estado
-          </button>
-
           {order.status === "QUOTE" && (
             <button
               type="button"
-              onClick={handleAcceptQuote}
+              onClick={() => onChangeStatus("PENDING")}
               disabled={disabled}
               className="rounded-lg border border-blue-200 bg-white px-4 py-2.5 text-sm font-medium text-blue-600 transition hover:bg-blue-50 hover:border-blue-300 disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -173,7 +123,7 @@ export function OrderDetailHeader({
           {order.status === "PENDING" && (
             <button
               type="button"
-              onClick={handleStartProduction}
+              onClick={() => onChangeStatus("IN_PROGRESS")}
               disabled={disabled}
               className="rounded-lg border border-indigo-200 bg-white px-4 py-2.5 text-sm font-medium text-indigo-600 transition hover:bg-indigo-50 hover:border-indigo-300 disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -184,7 +134,7 @@ export function OrderDetailHeader({
           {order.status === "IN_PROGRESS" && (
             <button
               type="button"
-              onClick={handleMarkAsReady}
+              onClick={() => onChangeStatus("READY")}
               disabled={disabled}
               className="rounded-lg border border-green-200 bg-white px-4 py-2.5 text-sm font-medium text-green-600 transition hover:bg-green-50 hover:border-green-300 disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -195,11 +145,11 @@ export function OrderDetailHeader({
           {order.status === "READY" && (
             <button
               type="button"
-              onClick={handleDispatchOrder}
+              onClick={() => onChangeStatus("DELIVERED")}
               disabled={disabled}
               className="rounded-lg border border-emerald-200 bg-white px-4 py-2.5 text-sm font-medium text-emerald-600 transition hover:bg-emerald-50 hover:border-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Despachar pedido
+              Marcar como entregado
             </button>
           )}
 
@@ -209,7 +159,7 @@ export function OrderDetailHeader({
             order.status !== "QUOTE" && (
               <button
                 type="button"
-                onClick={handleGeneratePayment}
+                onClick={onGeneratePayment}
                 disabled={disabled}
                 className="rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 hover:border-red-300 disabled:cursor-not-allowed disabled:opacity-50"
               >
@@ -220,7 +170,7 @@ export function OrderDetailHeader({
           {order.status === "PENDING" && (
             <button
               type="button"
-              onClick={handleCancelOrder}
+              onClick={() => onChangeStatus("CANCELLED")}
               disabled={disabled}
               className="rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 hover:border-red-300 disabled:cursor-not-allowed disabled:opacity-50"
             >
@@ -230,7 +180,7 @@ export function OrderDetailHeader({
           {order.status === "QUOTE" && (
             <button
               type="button"
-              onClick={handleRejectQuote}
+              onClick={() => onChangeStatus("CANCELLED")}
               disabled={disabled}
               className="rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 hover:border-red-300 disabled:cursor-not-allowed disabled:opacity-50"
             >

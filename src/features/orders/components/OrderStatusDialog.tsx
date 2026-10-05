@@ -1,67 +1,26 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import type { OrderStatus } from "../../../types";
 
 interface OrderStatusDialogProps {
   currentStatus: OrderStatus;
+  newStatus: OrderStatus;
   open: boolean;
   loading?: boolean;
   onClose: () => void;
   onConfirm: (status: OrderStatus, notes?: string) => Promise<void>;
 }
 
-const STATUS_OPTIONS: Array<{
-  value: OrderStatus;
-  label: string;
-  description: string;
-}> = [
-  {
-    value: "QUOTE",
-    label: "Cotización",
-    description: "El pedido todavía está en etapa de cotización.",
-  },
-  {
-    value: "PENDING",
-    label: "Pendiente",
-    description: "El pedido fue confirmado y espera producción.",
-  },
-  {
-    value: "IN_PROGRESS",
-    label: "En producción",
-    description: "El pedido se encuentra siendo bordado.",
-  },
-  {
-    value: "READY",
-    label: "Listo",
-    description: "El pedido está listo para ser entregado.",
-  },
-  {
-    value: "DELIVERED",
-    label: "Entregado",
-    description: "El pedido fue entregado al cliente.",
-  },
-  {
-    value: "CANCELLED",
-    label: "Cancelado",
-    description: "El pedido fue cancelado.",
-  },
-];
-
 export function OrderStatusDialog({
   currentStatus,
+  newStatus,
   open,
   loading = false,
   onClose,
   onConfirm,
 }: OrderStatusDialogProps) {
-  const [status, setStatus] = useState<OrderStatus>(currentStatus);
   const [notes, setNotes] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
-
-  const selectedOption = useMemo(
-    () => STATUS_OPTIONS.find((option) => option.value === status),
-    [status],
-  );
 
   if (!open) {
     return null;
@@ -72,17 +31,17 @@ export function OrderStatusDialog({
 
     setValidationError(null);
 
-    if (status === currentStatus) {
+    if (newStatus === currentStatus) {
       setValidationError("Selecciona un estado diferente al actual.");
       return;
     }
 
-    if (status === "CANCELLED" && !notes.trim()) {
+    if (newStatus === "CANCELLED" && !notes.trim()) {
       setValidationError("Indica el motivo de la cancelación.");
       return;
     }
 
-    await onConfirm(status, notes.trim() || undefined);
+    await onConfirm(newStatus, notes.trim() || undefined);
   }
 
   return (
@@ -100,7 +59,11 @@ export function OrderStatusDialog({
                 id="order-status-dialog-title"
                 className="text-lg font-semibold text-slate-900"
               >
-                Cambiar estado
+                {newStatus === "PENDING" && "¿Desea aceptar la cotización?"}
+                {newStatus === "IN_PROGRESS" && "¿Desea iniciar la producción?"}
+                {newStatus === "READY" && "¿Desea marcar como listo?"}
+                {newStatus === "DELIVERED" && "¿Desea marcar como entregado?"}
+                {newStatus === "CANCELLED" && "¿Desea cancelar el pedido?"}
               </h2>
 
               <p className="mt-1 text-sm text-slate-500">
@@ -123,40 +86,11 @@ export function OrderStatusDialog({
         <form onSubmit={handleSubmit} className="space-y-5 p-5 sm:p-6">
           <div>
             <label
-              htmlFor="order-status"
-              className="block text-sm font-medium text-slate-700"
-            >
-              Nuevo estado
-            </label>
-
-            <select
-              id="order-status"
-              value={status}
-              onChange={(event) => setStatus(event.target.value as OrderStatus)}
-              disabled={loading}
-              className="mt-1.5 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:bg-slate-100"
-            >
-              {STATUS_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-
-            {selectedOption && (
-              <p className="mt-2 text-xs text-slate-500">
-                {selectedOption.description}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label
               htmlFor="order-status-notes"
               className="block text-sm font-medium text-slate-700"
             >
               Nota del cambio
-              {status === "CANCELLED" && (
+              {newStatus === "CANCELLED" && (
                 <span className="ml-1 text-red-500">*</span>
               )}
             </label>

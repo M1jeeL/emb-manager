@@ -17,14 +17,21 @@ import { OrderStatusHistory } from "../components/OrderStatusHistory";
 
 import { getApiErrorMessage } from "../../../lib/getApiErrorMessage";
 import { useToast } from "../../../components/ui";
+import { OrderPaymentDialog } from "../components/OrderPaymentDialog";
+import type { PaymentFormData } from "../../payments/schemas/payment.schema";
+import { useCreatePayment } from "../../../hooks/usePayments";
 
 export function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const toast = useToast();
 
+  const createPayment = useCreatePayment();
   const [isEditing, setIsEditing] = useState(false);
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
+  const [newStatus, setNewStatus] =
+    useState<NonNullable<typeof order>["status"]>("QUOTE");
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
 
   const {
     data: order,
@@ -107,14 +114,55 @@ export function OrderDetailPage() {
     }
   }
 
+  function closeForm() {
+    if (createPayment.isPending) {
+      return;
+    }
+
+    setIsPaymentDialogOpen(false);
+  }
+
+  async function handleSubmit(formData: PaymentFormData) {
+    try {
+      await createPayment.mutateAsync({
+        orderId: formData.orderId,
+        amount: formData.amount,
+        method: formData.method,
+        paidAt: formData.paidAt,
+        ...(formData.reference?.trim()
+          ? {
+              reference: formData.reference.trim(),
+            }
+          : {}),
+        ...(formData.notes?.trim()
+          ? {
+              notes: formData.notes.trim(),
+            }
+          : {}),
+      });
+
+      toast.success("Pago registrado", "El pago se registró correctamente.");
+
+      closeForm();
+    } catch (error) {
+      const message = getApiErrorMessage(error);
+
+      toast.error("No se pudo registrar el pago", message);
+    }
+  }
+
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
       <OrderDetailHeader
         order={order}
         onBack={() => navigate("/orders")}
         onEdit={() => setIsEditing((current) => !current)}
-        onChangeStatus={() => setIsStatusDialogOpen(true)}
-        disabled={isFetching}
+        onChangeStatus={(status) => {
+          setNewStatus(status);
+          setIsStatusDialogOpen(true);
+        }}
+        onGeneratePayment={() => setIsPaymentDialogOpen(true)}
+        disabled={updateOrder.isPending || changeStatus.isPending}
       />
 
       {isFetching && !isLoading && (
@@ -150,13 +198,26 @@ export function OrderDetailPage() {
         </>
       )}
 
-      <OrderStatusDialog
-        currentStatus={order.status}
-        open={isStatusDialogOpen}
-        loading={changeStatus.isPending}
-        onClose={() => setIsStatusDialogOpen(false)}
-        onConfirm={handleChangeStatus}
-      />
+      {isStatusDialogOpen && (
+        <OrderStatusDialog
+          newStatus={newStatus}
+          currentStatus={order.status}
+          open={isStatusDialogOpen}
+          loading={changeStatus.isPending}
+          onClose={() => setIsStatusDialogOpen(false)}
+          onConfirm={handleChangeStatus}
+        />
+      )}
+
+      {isPaymentDialogOpen && (
+        <OrderPaymentDialog
+          order={order}
+          open={isPaymentDialogOpen}
+          loading={false}
+          onClose={() => setIsPaymentDialogOpen(false)}
+          onSubmit={handleSubmit}
+        />
+      )}
     </div>
   );
 }
