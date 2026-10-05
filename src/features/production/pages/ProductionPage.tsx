@@ -28,7 +28,12 @@ import {
   getProductionStatusLabel,
 } from "../utils/production.utils";
 
-import { ConfirmDialog, Pagination, useToast } from "../../../components/ui";
+import {
+  Button,
+  ConfirmDialog,
+  Pagination,
+  useToast,
+} from "../../../components/ui";
 
 import { getApiErrorMessage } from "../../../lib/getApiErrorMessage";
 
@@ -262,7 +267,7 @@ export function ProductionPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Producción</h1>
 
@@ -272,13 +277,13 @@ export function ProductionPage() {
           </p>
         </div>
 
-        <button
+        <Button
           type="button"
           onClick={openCreate}
-          className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
+          className="rounded-lg bg-indigo-600 px-4 py-2.5 font-medium text-white transition hover:bg-indigo-700"
         >
           + Nueva producción
-        </button>
+        </Button>
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

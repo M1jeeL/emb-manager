@@ -87,7 +87,7 @@ export function OrderDetailPage() {
   }
 
   async function handleChangeStatus(
-    status: typeof order.status,
+    status: NonNullable<typeof order>["status"],
     notes?: string,
   ) {
     try {

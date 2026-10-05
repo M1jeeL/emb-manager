@@ -43,6 +43,49 @@ export function OrderDetailHeader({
     () => STATUS_LABELS[order.status] ?? order.status,
     [order.status],
   );
+  // Funcion para generar un pago
+  const handleGeneratePayment = () => {
+    // Aquí puedes agregar la lógica para generar un pago
+    console.log("Generando pago para pedido:", order.orderNumber);
+  };
+
+  // Funcion para cancelar un pedido
+  const handleCancelOrder = () => {
+    // Aquí puedes agregar la lógica para cancelar un pedido
+    console.log("Cancelando pedido:", order.orderNumber);
+  };
+
+  // Funcion para aceptar una cotización
+  const handleAcceptQuote = () => {
+    // Aquí puedes agregar la lógica para aceptar una cotización
+    console.log("Aceptando cotización para pedido:", order.orderNumber);
+  };
+
+  // Funcion para empezar producción
+  const handleStartProduction = () => {
+    // Aquí puedes agregar la lógica para empezar la producción
+    console.log("Empezando producción para pedido:", order.orderNumber);
+  };
+
+  // Funcion para marcar listo el pedido
+  const handleMarkAsReady = () => {
+    // Aquí puedes agregar la lógica para marcar el pedido como listo
+    console.log("Marcando pedido como listo:", order.orderNumber);
+  };
+
+  // Funcion para despachar pedido
+  const handleDispatchOrder = () => {
+    // Aquí puedes agregar la lógica para despachar el pedido
+    console.log("Despachando pedido:", order.orderNumber);
+  };
+
+  // Funcion para rechazar una cotización
+  const handleRejectQuote = () => {
+    // Aquí puedes agregar la lógica para rechazar una cotización
+    console.log("Rechazando cotización para pedido:", order.orderNumber);
+  };
+
+  console.log(order);
 
   return (
     <div className="space-y-4">
@@ -111,10 +154,89 @@ export function OrderDetailHeader({
             type="button"
             onClick={onChangeStatus}
             disabled={disabled}
-            className="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cambiar estado
           </button>
+
+          {order.status === "QUOTE" && (
+            <button
+              type="button"
+              onClick={handleAcceptQuote}
+              disabled={disabled}
+              className="rounded-lg border border-blue-200 bg-white px-4 py-2.5 text-sm font-medium text-blue-600 transition hover:bg-blue-50 hover:border-blue-300 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Aceptar cotización
+            </button>
+          )}
+
+          {order.status === "PENDING" && (
+            <button
+              type="button"
+              onClick={handleStartProduction}
+              disabled={disabled}
+              className="rounded-lg border border-indigo-200 bg-white px-4 py-2.5 text-sm font-medium text-indigo-600 transition hover:bg-indigo-50 hover:border-indigo-300 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Empezar producción
+            </button>
+          )}
+
+          {order.status === "IN_PROGRESS" && (
+            <button
+              type="button"
+              onClick={handleMarkAsReady}
+              disabled={disabled}
+              className="rounded-lg border border-green-200 bg-white px-4 py-2.5 text-sm font-medium text-green-600 transition hover:bg-green-50 hover:border-green-300 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Marcar como listo
+            </button>
+          )}
+
+          {order.status === "READY" && (
+            <button
+              type="button"
+              onClick={handleDispatchOrder}
+              disabled={disabled}
+              className="rounded-lg border border-emerald-200 bg-white px-4 py-2.5 text-sm font-medium text-emerald-600 transition hover:bg-emerald-50 hover:border-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Despachar pedido
+            </button>
+          )}
+
+          {(order.paymentStatus === "UNPAID" ||
+            order.paymentStatus === "PARTIAL") &&
+            order.status !== "CANCELLED" &&
+            order.status !== "QUOTE" && (
+              <button
+                type="button"
+                onClick={handleGeneratePayment}
+                disabled={disabled}
+                className="rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 hover:border-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Generar pago
+              </button>
+            )}
+
+          {order.status === "PENDING" && (
+            <button
+              type="button"
+              onClick={handleCancelOrder}
+              disabled={disabled}
+              className="rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 hover:border-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Cancelar pedido
+            </button>
+          )}
+          {order.status === "QUOTE" && (
+            <button
+              type="button"
+              onClick={handleRejectQuote}
+              disabled={disabled}
+              className="rounded-lg border border-red-200 bg-white px-4 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 hover:border-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Rechazar cotización
+            </button>
+          )}
         </div>
       </div>
     </div>
