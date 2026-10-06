@@ -6,8 +6,8 @@ interface MobileNavProps {
 
 const items = [
   {
-    label: "Inicio",
-    path: "/",
+    label: "Dashboard",
+    path: "/dashboard",
     icon: "⌂",
   },
   {

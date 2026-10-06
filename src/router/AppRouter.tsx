@@ -17,6 +17,7 @@ import { EmployeesPage } from "../features/employees/pages/EmployeesPage";
 import { MachinesPage } from "../features/machines/pages/MachinesPage";
 import { ProductionPage } from "../features/production/pages/ProductionPage";
 import { PaymentsPage } from "../features/payments/pages/PaymentsPage";
+import { DashboardPage } from "../features/dashboard/pages/DashboardPage";
 
 export function AppRouter() {
   return (
@@ -25,7 +26,7 @@ export function AppRouter() {
 
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
-          <Route path="/" element={<Spinner />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/customers" element={<CustomersPage />} />
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/orders/new" element={<CreateOrderPage />} />
@@ -44,7 +45,7 @@ export function AppRouter() {
         </Route>
       </Route>
 
-      <Route path="*" element={<Navigate to="/orders" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }

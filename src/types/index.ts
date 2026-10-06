@@ -13,3 +13,5 @@ export type * from "./machines";
 export type * from "./production";
 
 export type * from "./payments";
+
+export type * from "./dashboard";

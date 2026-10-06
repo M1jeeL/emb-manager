@@ -12,7 +12,7 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   if (isAuthenticated) {
-    return <Navigate to="/customers" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -23,7 +23,7 @@ export function LoginPage() {
 
     try {
       await login(email, password);
-      navigate("/customers", { replace: true });
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "No se pudo iniciar sesión",
