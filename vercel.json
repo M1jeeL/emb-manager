@@ -1,0 +1,8 @@
+{
+  "rewtrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
