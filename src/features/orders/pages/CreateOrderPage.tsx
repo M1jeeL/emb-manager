@@ -354,7 +354,7 @@ export function CreateOrderPage() {
               name: logo.name,
               currentPrice: logo.currentPrice,
               description: logo.description ?? "",
-              quantity: 1,
+              quantity: item.quantity,
               notes: "",
             },
           ],
