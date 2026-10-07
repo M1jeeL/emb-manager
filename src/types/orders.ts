@@ -8,7 +8,12 @@ export type OrderStatus =
 
 export type PaymentStatus = "UNPAID" | "PARTIAL" | "PAID";
 
-export type PaymentMethod = "CASH" | "BANK_TRANSFER" | "DEBIT_CARD" | "CREDIT_CARD" | "OTHER";
+export type PaymentMethod =
+  | "CASH"
+  | "BANK_TRANSFER"
+  | "DEBIT_CARD"
+  | "CREDIT_CARD"
+  | "OTHER";
 
 export type OrderItemStatus =
   | "PENDING"
@@ -117,7 +122,7 @@ export interface OrderItemLogo {
   logoName: string;
   unitPrice: string;
   quantity: number;
-
+  pendingQuantity?: number;
   notes: string | null;
 
   createdAt: string;

@@ -1,7 +1,10 @@
 import { useMemo, useState } from "react";
 
 import { useOrder } from "../../../hooks/useOrders";
-import { useProduction } from "../../../hooks/useProduction";
+import {
+  useProduction,
+  usePendingProductionOrder,
+} from "../../../hooks/useProduction";
 
 import type {
   Employee,
@@ -84,22 +87,30 @@ export function ProductionForm({
     useState<ProductionMode>("INDIVIDUAL");
 
   /*
-   * Obtenemos siempre el detalle completo del pedido.
-   *
-   * Esto es importante tanto para crear como para editar,
-   * porque necesitamos items + logos.
+   * Si está editando -> usa useOrder
+   * Si está creando -> usa usePendingProductionOrder
    */
-  const {
-    data: selectedOrder,
-    isLoading: isLoadingOrder,
-    isError: isOrderError,
-  } = useOrder(orderId);
+  const orderQuery = useOrder(orderId);
+
+  const pendingOrderQuery = usePendingProductionOrder(
+    orderId,
+    !isEditing && Boolean(orderId),
+  );
+
+  // Consolidamos la información de acuerdo al modo activo
+  const currentOrder = isEditing ? orderQuery.data : pendingOrderQuery.data;
+
+  const isLoadingOrder = isEditing
+    ? orderQuery.isLoading
+    : pendingOrderQuery.isLoading;
+
+  const isOrderError = isEditing
+    ? orderQuery.isError
+    : pendingOrderQuery.isError;
 
   /*
    * Consultamos los trabajos existentes del pedido
    * solamente cuando tenemos un orderId.
-   *
-   * El backend sigue siendo la autoridad final.
    */
   const productionQuery = useProduction(
     orderId
@@ -113,8 +124,6 @@ export function ProductionForm({
   );
 
   const productionJobs = productionQuery.data?.data ?? [];
-
-  const currentOrder = selectedOrder;
 
   const selectedItem = useMemo(() => {
     if (!currentOrder) {
@@ -135,12 +144,7 @@ export function ProductionForm({
   }, [selectedItem, orderItemLogoId]);
 
   /*
-   * Calcula cuántas unidades ya están asignadas
-   * a producción.
-   *
-   * CANCELLED no consume capacidad.
-   *
-   * Cuando editamos un trabajo, excluimos ese trabajo.
+   * Calcula cuántas unidades ya están asignadas a producción.
    */
   function getProducedQuantity(itemId: string, logoId: string | null) {
     return productionJobs
@@ -166,12 +170,6 @@ export function ProductionForm({
       .reduce((total, job) => total + job.quantity, 0);
   }
 
-  /*
-   * Si estamos trabajando con un logo,
-   * la cantidad solicitada corresponde al logo.
-   *
-   * Si no existe logo, corresponde al item.
-   */
   const requestedQuantity = selectedLogo
     ? selectedLogo.quantity
     : (selectedItem?.quantity ?? 0);
@@ -205,23 +203,14 @@ export function ProductionForm({
       return;
     }
 
-    /*
-     * Si no tiene logos calculamos inmediatamente
-     * cuánto queda disponible.
-     */
     if (item.logos.length === 0) {
       const produced = getProducedQuantity(item.id, null);
-
       const available = Math.max(0, item.quantity - produced);
 
       setQuantity(available > 0 ? available : 1);
-
       return;
     }
 
-    /*
-     * Si tiene logos, primero seleccionamos el logo.
-     */
     setQuantity(1);
   }
 
@@ -243,19 +232,13 @@ export function ProductionForm({
     }
 
     const produced = getProducedQuantity(selectedItem.id, logo.id);
-
     const available = Math.max(0, logo.quantity - produced);
 
     setQuantity(available > 0 ? available : 1);
   }
 
   function handleQuantityChange(value: number) {
-    if (!Number.isFinite(value)) {
-      setQuantity(1);
-      return;
-    }
-
-    if (value < 1) {
+    if (!Number.isFinite(value) || value < 1) {
       setQuantity(1);
       return;
     }
@@ -275,12 +258,6 @@ export function ProductionForm({
       return;
     }
 
-    /*
-     * Producción del pedido completo.
-     *
-     * El backend determina automáticamente
-     * qué trabajos necesita crear.
-     */
     if (!isEditing && productionMode === "FULL_ORDER") {
       if (incompleteItems.length === 0) {
         return;
@@ -295,20 +272,10 @@ export function ProductionForm({
       return;
     }
 
-    /*
-     * Producción individual.
-     */
-    if (!orderItemId) {
+    if (!orderItemId || !selectedItem) {
       return;
     }
 
-    if (!selectedItem) {
-      return;
-    }
-
-    /*
-     * Si existen logos, uno debe seleccionarse.
-     */
     if (!isEditing && selectedItem.logos.length > 0 && !orderItemLogoId) {
       return;
     }
@@ -328,13 +295,9 @@ export function ProductionForm({
     if (isEditing) {
       await onUpdate?.({
         orderItemLogoId: orderItemLogoId || null,
-
         machineId: machineId || null,
-
         employeeId: employeeId || null,
-
         quantity,
-
         notes: notes.trim() || null,
       });
 
@@ -344,15 +307,10 @@ export function ProductionForm({
     await onSubmit({
       orderId,
       orderItemId,
-
       ...(orderItemLogoId ? { orderItemLogoId } : {}),
-
       ...(machineId ? { machineId } : {}),
-
       ...(employeeId ? { employeeId } : {}),
-
       quantity,
-
       ...(notes.trim() ? { notes: notes.trim() } : {}),
     });
   }
@@ -511,10 +469,12 @@ export function ProductionForm({
               id="production-item"
               value={orderItemId}
               onChange={(event) => handleItemChange(event.target.value)}
-              disabled={isSubmitting || !currentOrder || isLoadingOrder}
+              disabled={
+                isSubmitting || !currentOrder || isLoadingOrder || isEditing
+              }
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-100"
             >
-              <option value="">
+              <option value="" disabled>
                 {currentOrder
                   ? "Selecciona una prenda"
                   : "Selecciona primero un pedido"}
@@ -613,11 +573,14 @@ export function ProductionForm({
               value={orderItemLogoId}
               onChange={(event) => handleLogoChange(event.target.value)}
               disabled={
-                isSubmitting || !selectedItem || selectedItem.logos.length === 0
+                isSubmitting ||
+                !selectedItem ||
+                selectedItem.logos.length === 0 ||
+                isEditing
               }
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-100"
             >
-              <option value="">
+              <option value="" disabled>
                 {!selectedItem
                   ? "Selecciona primero una prenda"
                   : selectedItem.logos.length === 0
@@ -627,7 +590,6 @@ export function ProductionForm({
 
               {selectedItem?.logos.map((logo) => {
                 const produced = getProducedQuantity(selectedItem.id, logo.id);
-
                 const available = Math.max(0, logo.quantity - produced);
 
                 return (
@@ -769,7 +731,7 @@ export function ProductionForm({
                           </span>
 
                           <span className="font-medium text-slate-700">
-                            {logo.quantity} unidades
+                            {logo.pendingQuantity} unidades
                           </span>
                         </div>
                       ))}

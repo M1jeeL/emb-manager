@@ -175,3 +175,58 @@ export interface CreateOrderProductionResponse {
   createdCount: number;
   productionJobs: ProductionJob[];
 }
+
+export interface ProductionPendingOrderLogo {
+  id: string;
+  logoId: string;
+  logoName: string;
+  unitPrice: string | number;
+  quantity: number;
+  notes?: string | null;
+  createdAt: string;
+  pendingQuantity: number;
+  logo: {
+    id: string;
+    name: string;
+    status: string;
+    currentPrice: string | number;
+    customerId: string | null;
+  };
+}
+
+export interface ProductionPendingOrderItem {
+  id: string;
+  garmentId: string;
+  description: string | null;
+  quantity: number;
+  status: string;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  pendingQuantity: number;
+  garment: {
+    id: string;
+    name: string;
+    description: string | null;
+    active: boolean;
+  };
+  logos: ProductionPendingOrderLogo[];
+}
+
+export interface ProductionPendingOrder {
+  id: string;
+  orderNumber: number;
+  status: string;
+  paymentStatus: string;
+  orderedAt: string;
+  promisedAt: string | null;
+  customer: {
+    id: string;
+    name: string;
+    email: string | null;
+    phone: string | null;
+    taxId: string | null;
+    companyName: string | null;
+  };
+  items: ProductionPendingOrderItem[];
+}

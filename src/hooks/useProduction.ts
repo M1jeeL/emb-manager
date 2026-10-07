@@ -30,6 +30,9 @@ export const productionKeys = {
   detail: (id: string) => [...productionKeys.details(), id] as const,
 
   availableOrders: () => [...productionKeys.all, "available-orders"] as const,
+
+  pendingOrder: (orderId: string) =>
+    [...productionKeys.all, "pending-order", orderId] as const,
 };
 
 export function useProduction(filters: ProductionFilters = {}, enabled = true) {
@@ -38,6 +41,14 @@ export function useProduction(filters: ProductionFilters = {}, enabled = true) {
     queryFn: () => productionApi.findAll(filters),
     placeholderData: keepPreviousData,
     enabled,
+  });
+}
+
+export function usePendingProductionOrder(orderId: string, enabled = true) {
+  return useQuery({
+    queryKey: productionKeys.pendingOrder(orderId),
+    queryFn: () => productionApi.findPendingProduction(orderId),
+    enabled: Boolean(orderId) && enabled,
   });
 }
 
