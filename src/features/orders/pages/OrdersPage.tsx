@@ -210,8 +210,11 @@ export function OrdersPage() {
 
       {/* Resultados */}
       {isLoading ? (
-        <div className="rounded-xl bg-white p-10 text-center text-slate-500 shadow-sm">
-          Cargando pedidos...
+        <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-white p-12 text-center shadow-xs">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+          <span className="mt-3 text-sm text-slate-500 font-medium">
+            Cargando pedidos...
+          </span>
         </div>
       ) : isError ? (
         <div className="rounded-xl bg-white p-6 shadow-sm">
