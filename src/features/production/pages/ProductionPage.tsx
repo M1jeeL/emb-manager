@@ -42,6 +42,23 @@ function parsePositiveInt(value: string | null, fallback: number) {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
 }
 
+// Función auxiliar para formatear la duración de bordado
+function formatDuration(
+  startedAt?: string | null,
+  completedAt?: string | null,
+) {
+  if (!startedAt) return null;
+  const start = new Date(startedAt).getTime();
+  const end = completedAt ? new Date(completedAt).getTime() : Date.now();
+  const diffMinutes = Math.floor((end - start) / (1000 * 60));
+
+  if (diffMinutes < 1) return "< 1 min";
+  if (diffMinutes < 60) return `${diffMinutes} min`;
+  const hours = Math.floor(diffMinutes / 60);
+  const mins = diffMinutes % 60;
+  return `${hours}h ${mins}m`;
+}
+
 export function ProductionPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const toast = useToast();
@@ -110,13 +127,14 @@ export function ProductionPage() {
   const stats = useMemo(() => {
     return jobs.reduce(
       (acc, job) => {
+        acc.totalUnits += job.quantity || 0;
         if (job.status === "PENDING") acc.pending++;
         if (job.status === "IN_PROGRESS") acc.inProgress++;
         if (job.status === "PAUSED") acc.paused++;
         if (job.status === "COMPLETED") acc.completed++;
         return acc;
       },
-      { pending: 0, inProgress: 0, paused: 0, completed: 0 },
+      { pending: 0, inProgress: 0, paused: 0, completed: 0, totalUnits: 0 },
     );
   }, [jobs]);
 
@@ -203,15 +221,17 @@ export function ProductionPage() {
     createOrderProduction.isPending ||
     updateProduction.isPending;
 
-  // Renderizador reutilizable de las acciones según el estado del trabajo
+  // Renderizador estandarizado de acciones
   const renderActionButtons = (job: ProductionJob, isMobile = false) => {
     const baseBtnClass = isMobile
-      ? "flex-1 inline-flex justify-center items-center px-3 py-2 text-xs font-semibold rounded-lg border transition shadow-xs"
-      : "inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-md transition";
+      ? "flex-1 inline-flex justify-center items-center px-3 py-2 text-xs font-medium rounded-lg border transition shadow-xs"
+      : "inline-flex items-center px-2.5 py-1.5 text-xs font-semibold rounded-md transition shadow-2xs";
 
     return (
       <div
-        className={`flex flex-wrap items-center gap-1.5 ${isMobile ? "w-full pt-2" : "justify-end"}`}
+        className={`flex flex-wrap items-center gap-1.5 ${
+          isMobile ? "w-full pt-1" : "justify-end"
+        }`}
       >
         {job.status === "PENDING" && (
           <button
@@ -220,49 +240,60 @@ export function ProductionPage() {
               setStatusJob(job);
               setNextStatus("IN_PROGRESS");
             }}
-            className={`${baseBtnClass} bg-blue-600 text-white hover:bg-blue-700 border-transparent`}
+            className={`${baseBtnClass} bg-indigo-600 text-white hover:bg-indigo-700 border-transparent`}
           >
-            Iniciar
+            ▶ Iniciar
           </button>
         )}
 
         {job.status === "IN_PROGRESS" && (
-          <button
-            type="button"
-            onClick={() => {
-              setStatusJob(job);
-              setNextStatus("PAUSED");
-            }}
-            className={`${baseBtnClass} bg-amber-500 text-white hover:bg-amber-600 border-transparent`}
-          >
-            Pausar
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                setStatusJob(job);
+                setNextStatus("PAUSED");
+              }}
+              className={`${baseBtnClass} bg-amber-500 text-white hover:bg-amber-600 border-transparent`}
+            >
+              ⏸ Pausar
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setStatusJob(job);
+                setNextStatus("COMPLETED");
+              }}
+              className={`${baseBtnClass} bg-emerald-600 text-white hover:bg-emerald-700 border-transparent`}
+            >
+              ✓ Finalizar
+            </button>
+          </>
         )}
 
         {job.status === "PAUSED" && (
-          <button
-            type="button"
-            onClick={() => {
-              setStatusJob(job);
-              setNextStatus("IN_PROGRESS");
-            }}
-            className={`${baseBtnClass} bg-blue-600 text-white hover:bg-blue-700 border-transparent`}
-          >
-            Reanudar
-          </button>
-        )}
-
-        {(job.status === "IN_PROGRESS" || job.status === "PAUSED") && (
-          <button
-            type="button"
-            onClick={() => {
-              setStatusJob(job);
-              setNextStatus("COMPLETED");
-            }}
-            className={`${baseBtnClass} bg-emerald-600 text-white hover:bg-emerald-700 border-transparent`}
-          >
-            Completar
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                setStatusJob(job);
+                setNextStatus("IN_PROGRESS");
+              }}
+              className={`${baseBtnClass} bg-indigo-600 text-white hover:bg-indigo-700 border-transparent`}
+            >
+              ▶ Reanudar
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setStatusJob(job);
+                setNextStatus("COMPLETED");
+              }}
+              className={`${baseBtnClass} bg-emerald-600 text-white hover:bg-emerald-700 border-transparent`}
+            >
+              ✓ Finalizar
+            </button>
+          </>
         )}
 
         {job.status !== "COMPLETED" && job.status !== "CANCELLED" && (
@@ -294,14 +325,14 @@ export function ProductionPage() {
   return (
     <div className="space-y-6 pb-12 sm:pb-0">
       {/* 1. Encabezado Principal */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
-            Producción
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl flex items-center gap-2">
+            <span>🧵</span> Control de Producción y Bordado
           </h1>
           <p className="mt-1 text-xs text-slate-500 sm:text-sm">
-            Gestiona los trabajos de bordado, asignaciones y avance en tiempo
-            real.
+            Monitorea el estado de las máquinas, asignación de bordadores y
+            avance de pedidos.
           </p>
         </div>
 
@@ -327,46 +358,57 @@ export function ProductionPage() {
         </Button>
       </div>
 
-      {/* 2. KPIs / Métricas Adaptables */}
+      {/* 2. KPIs / Métricas del Taller */}
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <div className="rounded-xl border border-slate-200/80 bg-white p-3.5 sm:p-4 shadow-xs flex items-center justify-between">
+        <div className="rounded-xl border border-slate-200 bg-white p-3.5 sm:p-4 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-medium text-slate-500">Pendientes</p>
+            <p className="text-xs font-semibold tracking-wider text-slate-400">
+              Pendientes
+            </p>
             <p className="mt-1 text-xl sm:text-2xl font-bold text-slate-900">
               {stats.pending}
             </p>
           </div>
-          <div className="h-2 w-2 rounded-full bg-slate-400 sm:h-3 sm:w-3" />
+          <div className="h-3 w-3 rounded-full bg-slate-300" />
         </div>
 
-        <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-3.5 sm:p-4 shadow-xs flex items-center justify-between">
+        <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-3.5 sm:p-4 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-medium text-blue-700">En producción</p>
-            <p className="mt-1 text-xl sm:text-2xl font-bold text-blue-700">
+            <p className="text-xs font-semibold tracking-wider text-indigo-600">
+              En Máquina
+            </p>
+            <p className="mt-1 text-xl sm:text-2xl font-bold text-indigo-700">
               {stats.inProgress}
             </p>
           </div>
-          <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse sm:h-3 sm:w-3" />
+          <div className="relative flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-600"></span>
+          </div>
         </div>
 
-        <div className="rounded-xl border border-amber-100 bg-amber-50/40 p-3.5 sm:p-4 shadow-xs flex items-center justify-between">
+        <div className="rounded-xl border border-amber-100 bg-amber-50/50 p-3.5 sm:p-4 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-medium text-amber-700">Pausadas</p>
+            <p className="text-xs font-semibold tracking-wider text-amber-600">
+              Pausadas
+            </p>
             <p className="mt-1 text-xl sm:text-2xl font-bold text-amber-700">
               {stats.paused}
             </p>
           </div>
-          <div className="h-2 w-2 rounded-full bg-amber-500 sm:h-3 sm:w-3" />
+          <div className="h-3 w-3 rounded-full bg-amber-500" />
         </div>
 
-        <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-3.5 sm:p-4 shadow-xs flex items-center justify-between">
+        <div className="rounded-xl border border-emerald-100 bg-emerald-50/50 p-3.5 sm:p-4 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-medium text-emerald-700">Completadas</p>
+            <p className="text-xs font-semibold tracking-wider text-emerald-600">
+              Completadas
+            </p>
             <p className="mt-1 text-xl sm:text-2xl font-bold text-emerald-700">
               {stats.completed}
             </p>
           </div>
-          <div className="h-2 w-2 rounded-full bg-emerald-500 sm:h-3 sm:w-3" />
+          <div className="h-3 w-3 rounded-full bg-emerald-500" />
         </div>
       </div>
 
@@ -379,7 +421,7 @@ export function ProductionPage() {
           <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200 bg-white p-12 text-center shadow-xs">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
             <span className="mt-3 text-sm text-slate-500 font-medium">
-              Cargando producción...
+              Cargando panel de producción...
             </span>
           </div>
         ) : productionQuery.isError ? (
@@ -389,177 +431,247 @@ export function ProductionPage() {
           </div>
         ) : jobs.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400 text-xl">
               🧵
             </div>
             <p className="mt-3 font-semibold text-slate-900">
-              No hay trabajos de producción
+              No hay trabajos de producción registrados
             </p>
             <p className="mt-1 text-xs text-slate-500 max-w-sm">
-              No se encontraron registros con los filtros seleccionados o aún no
-              has creado una producción.
+              No se encontraron órdenes con los filtros seleccionados o la cola
+              de trabajo está al día.
             </p>
           </div>
         ) : (
           <>
-            {/* VISTA MÓVIL (< md): Cards Enriquecidas */}
+            {/* VISTA MÓVIL (< md): Tarjetas Detalladas */}
             <div className="grid grid-cols-1 gap-3 md:hidden">
-              {jobs.map((job) => (
-                <div
-                  key={job.id}
-                  className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs space-y-3 transition active:bg-slate-50/50"
-                >
-                  <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2.5">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900 text-sm">
-                          Pedido #{job.order.orderNumber}
-                        </span>
+              {jobs.map((job) => {
+                const duration = formatDuration(job.startedAt, job.completedAt);
+                return (
+                  <div
+                    key={job.id}
+                    className="rounded-xl border border-slate-200 bg-white p-4 shadow-xs space-y-3"
+                  >
+                    {/* Encabezado Orden & Estado */}
+                    <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2.5">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-slate-900 text-sm">
+                            Pedido #{job.order.orderNumber}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 font-medium">
+                          {job.order.customer.companyName ||
+                            job.order.customer.name}
+                        </p>
                       </div>
-                      <p className="text-xs text-slate-500">
-                        {job.order.customer.companyName ||
-                          job.order.customer.name}
-                      </p>
+
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${getProductionStatusClass(
+                          job.status,
+                        )}`}
+                      >
+                        {getProductionStatusLabel(job.status)}
+                      </span>
                     </div>
 
-                    <span
-                      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${getProductionStatusClass(
-                        job.status,
-                      )}`}
-                    >
-                      {getProductionStatusLabel(job.status)}
-                    </span>
-                  </div>
+                    {/* Prenda & Matriz de Bordado */}
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-slate-800 text-sm">
+                          {job.orderItem.garment.name}
+                        </span>
+                        <span className="text-xs font-bold bg-slate-100 text-slate-700 px-2 py-0.5 rounded">
+                          {job.quantity} un.
+                        </span>
+                      </div>
 
-                  <div className="space-y-1.5 text-xs text-slate-600">
-                    <div>
-                      <p className="font-semibold text-slate-900 text-sm">
-                        {job.orderItem.garment.name}
-                      </p>
                       {job.orderItemLogo && (
-                        <p className="text-slate-500 text-xs">
-                          Logo:{" "}
-                          <span className="text-slate-700">
+                        <div className="inline-flex items-center gap-1.5 text-xs bg-indigo-50/70 text-indigo-700 px-2 py-1 rounded-md border border-indigo-100 font-medium w-full">
+                          <span>🎨 Logo:</span>
+                          <span className="font-bold">
                             {job.orderItemLogo.logoName}
                           </span>
-                        </p>
+                        </div>
                       )}
                     </div>
 
+                    {/* Asignación Máquina & Bordador */}
                     <div className="grid grid-cols-2 gap-2 pt-1 text-xs">
-                      <div className="bg-slate-50 p-2 rounded-lg">
-                        <span className="block text-[10px] uppercase font-semibold text-slate-400">
+                      <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                        <span className="block text-[10px]font-bold text-slate-400">
                           Máquina
                         </span>
-                        <span className="font-medium text-slate-800">
+                        <span className="font-semibold text-slate-800">
                           {job.machine?.name ?? "Sin asignar"}
                         </span>
                       </div>
 
-                      <div className="bg-slate-50 p-2 rounded-lg">
-                        <span className="block text-[10px] uppercase font-semibold text-slate-400">
-                          Responsable
+                      <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                        <span className="block text-[10px]font-bold text-slate-400">
+                          Bordador
                         </span>
-                        <span className="font-medium text-slate-800">
+                        <span className="font-semibold text-slate-800">
                           {getEmployeeName(job.employee) || "Sin asignar"}
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex justify-between items-center pt-1 text-xs font-medium text-slate-700">
-                      <span>Cantidad total:</span>
-                      <span className="text-sm font-bold text-slate-900">
-                        {job.quantity} un.
-                      </span>
+                    {/* Notas y Tiempos si existen */}
+                    {(job.notes || duration) && (
+                      <div className="text-xs space-y-1 bg-slate-50/80 p-2 rounded-md border border-slate-100">
+                        {duration && (
+                          <div className="text-slate-500 font-medium">
+                            ⏱️ Tiempo transcurrido:{" "}
+                            <span className="text-slate-700 font-bold">
+                              {duration}
+                            </span>
+                          </div>
+                        )}
+                        {job.notes && (
+                          <div className="text-amber-800 italic">
+                            📝 {job.notes}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Acciones */}
+                    <div className="border-t border-slate-100 pt-2">
+                      {renderActionButtons(job, true)}
                     </div>
                   </div>
-
-                  {/* Acciones de la tarjeta móvil */}
-                  <div className="border-t border-slate-100 pt-2">
-                    {renderActionButtons(job, true)}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
-            {/* VISTA ESCRITORIO (>= md): Tabla Clásica */}
+            {/* VISTA ESCRITORIO (>= md): Tabla Optimizada */}
             <div className="hidden md:block overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xs">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
-                  <thead className="bg-slate-50/70 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <thead className="bg-slate-50/80 text-xs font-semibold  tracking-wider text-slate-500">
                     <tr>
-                      <th className="px-5 py-3.5">Trabajo</th>
-                      <th className="px-5 py-3.5">Pedido</th>
+                      <th className="px-5 py-3.5">Pedido & Cliente</th>
+                      <th className="px-5 py-3.5">Prenda & Logo / Matriz</th>
                       <th className="px-5 py-3.5">Máquina</th>
-                      <th className="px-5 py-3.5">Responsable</th>
-                      <th className="px-5 py-3.5">Cantidad</th>
-                      <th className="px-5 py-3.5">Estado</th>
+                      <th className="px-5 py-3.5">Bordador</th>
+                      <th className="px-5 py-3.5 text-center">Cant.</th>
+                      <th className="px-5 py-3.5">Estado / Tiempo</th>
                       <th className="px-5 py-3.5 text-right">Acciones</th>
                     </tr>
                   </thead>
 
                   <tbody className="divide-y divide-slate-100">
-                    {jobs.map((job) => (
-                      <tr
-                        key={job.id}
-                        className="transition hover:bg-slate-50/80"
-                      >
-                        <td className="px-5 py-4">
-                          <p className="font-medium text-slate-900">
-                            {job.orderItem.garment.name}
-                          </p>
-                          {job.orderItemLogo && (
-                            <p className="text-xs text-slate-500">
-                              {job.orderItemLogo.logoName}
+                    {jobs.map((job) => {
+                      const duration = formatDuration(
+                        job.startedAt,
+                        job.completedAt,
+                      );
+                      return (
+                        <tr
+                          key={job.id}
+                          className="transition hover:bg-slate-50/80"
+                        >
+                          {/* Pedido & Cliente */}
+                          <td className="px-5 py-4 whitespace-nowrap">
+                            <p className="font-bold text-slate-900">
+                              #{job.order.orderNumber}
                             </p>
-                          )}
-                        </td>
+                            <p
+                              className="text-xs text-slate-500 max-w-[150px] truncate"
+                              title={
+                                job.order.customer.companyName ||
+                                job.order.customer.name
+                              }
+                            >
+                              {job.order.customer.companyName ||
+                                job.order.customer.name}
+                            </p>
+                          </td>
 
-                        <td className="px-5 py-4 whitespace-nowrap">
-                          <p className="font-semibold text-slate-900">
-                            #{job.order.orderNumber}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {job.order.customer.companyName ||
-                              job.order.customer.name}
-                          </p>
-                        </td>
+                          {/* Prenda & Logo */}
+                          <td className="px-5 py-4">
+                            <p className="font-semibold text-slate-900">
+                              {job.orderItem.garment.name}
+                            </p>
+                            {job.orderItemLogo ? (
+                              <p className="text-xs text-indigo-600 font-medium flex items-center gap-1 mt-0.5">
+                                <span>🎨</span> {job.orderItemLogo.logoName}
+                              </p>
+                            ) : (
+                              <p className="text-xs text-slate-400 italic">
+                                Sin logo adjunto
+                              </p>
+                            )}
+                            {job.notes && (
+                              <p
+                                className="text-[11px] text-amber-700 italic truncate max-w-[200px] mt-0.5"
+                                title={job.notes}
+                              >
+                                📝 {job.notes}
+                              </p>
+                            )}
+                          </td>
 
-                        <td className="px-5 py-4 text-slate-600 whitespace-nowrap">
-                          {job.machine?.name ?? (
-                            <span className="text-slate-400 italic">
-                              Sin asignar
+                          {/* Máquina */}
+                          <td className="px-5 py-4 text-slate-700 whitespace-nowrap">
+                            {job.machine?.name ? (
+                              <span className="font-medium text-slate-800 bg-slate-100 px-2.5 py-1 rounded-md text-xs border border-slate-200">
+                                ⚙️ {job.machine.name}
+                              </span>
+                            ) : (
+                              <span className="text-slate-400 italic text-xs">
+                                Sin asignar
+                              </span>
+                            )}
+                          </td>
+
+                          {/* Responsable */}
+                          <td className="px-5 py-4 text-slate-700 whitespace-nowrap">
+                            {getEmployeeName(job.employee) ? (
+                              <span className="font-medium text-slate-800">
+                                👤 {getEmployeeName(job.employee)}
+                              </span>
+                            ) : (
+                              <span className="text-slate-400 italic text-xs">
+                                Sin asignar
+                              </span>
+                            )}
+                          </td>
+
+                          {/* Cantidad */}
+                          <td className="px-5 py-4 font-bold text-slate-900 whitespace-nowrap text-center">
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">
+                              {job.quantity} un.
                             </span>
-                          )}
-                        </td>
+                          </td>
 
-                        <td className="px-5 py-4 text-slate-600 whitespace-nowrap">
-                          {getEmployeeName(job.employee) || (
-                            <span className="text-slate-400 italic">
-                              Sin asignar
-                            </span>
-                          )}
-                        </td>
+                          {/* Estado & Tiempo */}
+                          <td className="px-5 py-4 whitespace-nowrap">
+                            <div className="space-y-1">
+                              <span
+                                className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${getProductionStatusClass(
+                                  job.status,
+                                )}`}
+                              >
+                                {getProductionStatusLabel(job.status)}
+                              </span>
+                              {duration && (
+                                <p className="text-[11px] text-slate-400 font-medium">
+                                  ⏱️ {duration}
+                                </p>
+                              )}
+                            </div>
+                          </td>
 
-                        <td className="px-5 py-4 font-semibold text-slate-900 whitespace-nowrap">
-                          {job.quantity}
-                        </td>
-
-                        <td className="px-5 py-4 whitespace-nowrap">
-                          <span
-                            className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${getProductionStatusClass(
-                              job.status,
-                            )}`}
-                          >
-                            {getProductionStatusLabel(job.status)}
-                          </span>
-                        </td>
-
-                        <td className="px-5 py-4 text-right whitespace-nowrap">
-                          {renderActionButtons(job)}
-                        </td>
-                      </tr>
-                    ))}
+                          {/* Acciones */}
+                          <td className="px-5 py-4 text-right whitespace-nowrap">
+                            {renderActionButtons(job)}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -586,19 +698,19 @@ export function ProductionPage() {
         )}
       </div>
 
-      {/* 5. Modal de Formulario con Fullscreen para Móviles */}
+      {/* 5. Modal de Formulario */}
       {formOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/60 p-0 sm:p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/60 p-0 sm:p-4 backdrop-blur-xs">
           <div className="max-h-[92vh] sm:max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-white shadow-2xl">
-            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/95 px-5 py-4">
+            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/95 px-5 py-4 backdrop-blur-xs">
               <div>
                 <h2 className="text-base sm:text-lg font-bold text-slate-900">
                   {editingJob ? "Editar producción" : "Nueva producción"}
                 </h2>
                 <p className="text-xs text-slate-500">
                   {editingJob
-                    ? "Actualiza las asignaciones del trabajo."
-                    : "Registra un nuevo trabajo para producción."}
+                    ? "Actualiza máquina, bordador o notas del trabajo."
+                    : "Asigna un nuevo trabajo a la cola de bordado."}
                 </p>
               </div>
 
@@ -640,7 +752,7 @@ export function ProductionPage() {
         }
         description={
           statusJob && nextStatus
-            ? `¿Estás seguro de cambiar el trabajo del pedido #${statusJob.order.orderNumber} a ${getProductionStatusLabel(
+            ? `¿Confirmas cambiar el trabajo del pedido #${statusJob.order.orderNumber} (${statusJob.orderItem.garment.name}) a ${getProductionStatusLabel(
                 nextStatus,
               ).toLowerCase()}?`
             : ""
