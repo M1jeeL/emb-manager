@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useAuth } from "../../../auth/AuthContext";
 
 import type { OrderDetail, OrderStatus } from "../../../types";
 
@@ -41,6 +42,19 @@ export function OrderDetailHeader({
   onGeneratePayment,
   disabled = false,
 }: OrderDetailHeaderProps) {
+  const { user } = useAuth();
+  const canManage = user?.role === "OWNER" || user?.role === "ADMIN" || user?.role === "MANAGER";
+  const promisedDate = order.promisedAt
+    ? new Date(`${order.promisedAt.slice(0, 10)}T00:00:00`)
+    : null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const isOverdue = Boolean(
+    promisedDate &&
+      promisedDate < today &&
+      order.status !== "DELIVERED" &&
+      order.status !== "CANCELLED",
+  );
   const statusLabel = useMemo(
     () => STATUS_LABELS[order.status] ?? order.status,
     [order.status],
@@ -66,6 +80,7 @@ export function OrderDetailHeader({
 
             <OrderStatusBadge status={order.status} />
             <OrderPaymentBadge status={order.paymentStatus} />
+            {isOverdue && <span className="rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-700">Entrega atrasada</span>}
           </div>
 
           <h1 className="mt-2 truncate text-2xl font-bold tracking-tight text-slate-950">
@@ -99,7 +114,7 @@ export function OrderDetailHeader({
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        {canManage ? <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={onEdit}
@@ -167,7 +182,7 @@ export function OrderDetailHeader({
               </button>
             )}
 
-          {order.status === "PENDING" && (
+          {order.status === "PENDING" && Number(order.paidAmount) === 0 && (
             <button
               type="button"
               onClick={() => onChangeStatus("CANCELLED")}
@@ -187,7 +202,7 @@ export function OrderDetailHeader({
               Rechazar cotización
             </button>
           )}
-        </div>
+        </div> : <p className="self-center text-xs text-slate-500">Consulta el estado con un usuario administrador para gestionar esta orden.</p>}
       </div>
     </div>
   );

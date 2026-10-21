@@ -4,7 +4,6 @@ import { LoginPage } from "../pages/LoginPage";
 import { ProtectedRoute } from "../auth/ProtectedRoute";
 import { CustomersPage } from "../features/customers/pages/CustomersPage";
 import { AppLayout } from "../components/layout";
-import { Spinner } from "../components/ui";
 import { GarmentsPage } from "../features/garments/pages/GarmentPage";
 import { LogosPage } from "../features/logos/pages/LogosPage";
 import { LogoCreatePage } from "../features/logos/pages/LogoCreatePage";
@@ -18,6 +17,9 @@ import { MachinesPage } from "../features/machines/pages/MachinesPage";
 import { ProductionPage } from "../features/production/pages/ProductionPage";
 import { PaymentsPage } from "../features/payments/pages/PaymentsPage";
 import { DashboardPage } from "../features/dashboard/pages/DashboardPage";
+import { ReportsPage } from "../features/dashboard/pages/ReportsPage";
+import { SettingsPage } from "../features/settings/SettingsPage";
+import { RoleRoute } from "../auth/RoleRoute";
 
 export function AppRouter() {
   return (
@@ -26,7 +28,7 @@ export function AppRouter() {
 
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/dashboard" element={<RoleRoute allowed={["OWNER", "ADMIN", "MANAGER"]} fallback="/production"><DashboardPage /></RoleRoute>} />
           <Route path="/customers" element={<CustomersPage />} />
           <Route path="/orders" element={<OrdersPage />} />
           <Route path="/orders/new" element={<CreateOrderPage />} />
@@ -39,9 +41,9 @@ export function AppRouter() {
           <Route path="/logos/:id/edit" element={<LogoEditPage />} />
           <Route path="/employees" element={<EmployeesPage />} />
           <Route path="/machines" element={<MachinesPage />} />
-          <Route path="/payments" element={<PaymentsPage />} />
-          <Route path="/reports" element={<Spinner />} />
-          <Route path="/settings" element={<Spinner />} />
+          <Route path="/payments" element={<RoleRoute allowed={["OWNER", "ADMIN", "MANAGER"]} fallback="/production"><PaymentsPage /></RoleRoute>} />
+          <Route path="/reports" element={<RoleRoute allowed={["OWNER", "ADMIN", "MANAGER"]} fallback="/production"><ReportsPage /></RoleRoute>} />
+          <Route path="/settings" element={<RoleRoute allowed={["OWNER", "ADMIN"]} fallback="/production"><SettingsPage /></RoleRoute>} />
         </Route>
       </Route>
 

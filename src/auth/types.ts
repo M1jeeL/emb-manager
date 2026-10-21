@@ -1,7 +1,7 @@
 export type UserRole = "OWNER" | "ADMIN" | "MANAGER" | "EMPLOYEE";
 
 export interface AuthUser {
-  userId: string;
+  id: string;
   email: string;
   firstName: string;
   lastName: string;

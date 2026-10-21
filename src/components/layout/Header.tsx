@@ -1,4 +1,6 @@
 import { UserMenu } from "./UserMenu";
+import { GlobalSearch } from "./GlobalSearch";
+import { NotificationMenu } from "./NotificationMenu";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -42,27 +44,8 @@ export function Header({
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Search placeholder */}
-        <button
-          type="button"
-          className="hidden items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-400 transition-colors hover:border-slate-300 hover:text-slate-600 md:flex"
-        >
-          <span>⌕</span>
-          <span>Buscar...</span>
-          <kbd className="ml-3 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px]">
-            Ctrl K
-          </kbd>
-        </button>
-
-        {/* Notifications */}
-        <button
-          type="button"
-          className="relative rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
-          aria-label="Notificaciones"
-        >
-          🔔
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
-        </button>
+        <GlobalSearch />
+        <NotificationMenu />
 
         <UserMenu />
       </div>

@@ -4,11 +4,13 @@ interface OrderItemLogoRowProps {
     name: string;
     unitPrice: string;
     quantity: number;
+    placement: string;
   };
 
   maxQuantity: number;
 
   onQuantityChange: (quantity: number) => void;
+  onPlacementChange: (placement: string) => void;
 
   onRemove: () => void;
 
@@ -29,6 +31,7 @@ export function OrderItemLogoRow({
   logo,
   maxQuantity,
   onQuantityChange,
+  onPlacementChange,
   onRemove,
   disabled = false,
 }: OrderItemLogoRowProps) {
@@ -47,7 +50,7 @@ export function OrderItemLogoRow({
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3">
+    <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 sm:flex-row sm:items-center">
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-slate-900">
           {logo.name}
@@ -56,6 +59,9 @@ export function OrderItemLogoRow({
         <p className="mt-0.5 text-xs text-slate-500">
           {formatCurrency(logo.unitPrice)} por unidad
         </p>
+        <label className="mt-2 block text-xs text-slate-500">Ubicación del bordado
+          <input value={logo.placement} onChange={(event) => onPlacementChange(event.target.value)} disabled={disabled} maxLength={100} className="mt-1 w-full rounded-md border border-slate-200 px-2 py-1.5 text-sm text-slate-800" placeholder="Pecho izquierdo, manga, espalda..." />
+        </label>
       </div>
 
       <div className="flex items-center rounded-md border border-slate-200">

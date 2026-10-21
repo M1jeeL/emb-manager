@@ -41,6 +41,7 @@ export function OrderDetailItemCard({ item }: OrderDetailItemCardProps) {
               {item.quantity}
             </strong>
           </p>
+          {(item.size || item.color) && <p className="mt-1 text-sm text-slate-600">{[item.size && `Talla ${item.size}`, item.color && `Color ${item.color}`].filter(Boolean).join(" · ")}</p>}
 
           {item.description && (
             <p className="mt-2 text-sm text-slate-600">{item.description}</p>
@@ -92,6 +93,7 @@ export function OrderDetailItemCard({ item }: OrderDetailItemCardProps) {
                     <p className="mt-0.5 text-xs text-slate-500">
                       {itemLogo.quantity} × {formatCurrency(itemLogo.unitPrice)}
                     </p>
+                    {itemLogo.placement && <p className="mt-1 text-xs font-medium text-indigo-700">Ubicación: {itemLogo.placement}</p>}
 
                     {itemLogo.notes && (
                       <p className="mt-1 text-xs text-slate-400">

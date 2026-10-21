@@ -112,7 +112,7 @@ export function MachinesPage() {
   const updateMachine = useUpdateMachine();
   const changeMachineStatus = useChangeMachineStatus();
 
-  const machines = data?.data ?? [];
+  const machines = useMemo(() => data?.data ?? [], [data?.data]);
 
   // --- Métricas / KPIs Operativos del Taller ---
   const kpis = useMemo(() => {

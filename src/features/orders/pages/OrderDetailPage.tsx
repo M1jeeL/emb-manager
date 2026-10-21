@@ -14,12 +14,15 @@ import { OrderDetailItems } from "../components/OrderDetailItems";
 import { OrderDetailSummary } from "../components/OrderDetailSummary";
 import { OrderStatusDialog } from "../components/OrderStatusDialog";
 import { OrderStatusHistory } from "../components/OrderStatusHistory";
+import { OrderCommercialHistory } from "../components/OrderCommercialHistory";
+import { OrderProductionSection } from "../components/OrderProductionSection";
 
 import { getApiErrorMessage } from "../../../lib/getApiErrorMessage";
 import { useToast } from "../../../components/ui";
 import { OrderPaymentDialog } from "../components/OrderPaymentDialog";
 import type { PaymentFormData } from "../../payments/schemas/payment.schema";
 import { useCreatePayment } from "../../../hooks/usePayments";
+import { useCreateOrderProduction } from "../../../hooks/useProduction";
 
 export function OrderDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -27,6 +30,7 @@ export function OrderDetailPage() {
   const toast = useToast();
 
   const createPayment = useCreatePayment();
+  const createOrderProduction = useCreateOrderProduction();
   const [isEditing, setIsEditing] = useState(false);
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
   const [newStatus, setNewStatus] =
@@ -98,6 +102,23 @@ export function OrderDetailPage() {
     notes?: string,
   ) {
     try {
+      if (
+        status === "IN_PROGRESS" &&
+        order.status === "PENDING" &&
+        order._count.productionJobs === 0
+      ) {
+        const result = await createOrderProduction.mutateAsync({
+          orderId: order.id,
+          payload: {},
+        });
+        setIsStatusDialogOpen(false);
+        toast.success(
+          "Producción iniciada",
+          `Se generaron ${result.createdCount} trabajos pendientes para el pedido.`,
+        );
+        return;
+      }
+
       await changeStatus.mutateAsync({
         status,
         notes,
@@ -162,7 +183,7 @@ export function OrderDetailPage() {
           setIsStatusDialogOpen(true);
         }}
         onGeneratePayment={() => setIsPaymentDialogOpen(true)}
-        disabled={updateOrder.isPending || changeStatus.isPending}
+        disabled={updateOrder.isPending || changeStatus.isPending || createOrderProduction.isPending}
       />
 
       {isFetching && !isLoading && (
@@ -183,6 +204,7 @@ export function OrderDetailPage() {
         />
       ) : (
         <>
+          <OrderProductionSection order={order} />
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
             <div className="space-y-6">
               <OrderDetailInfo order={order} />
@@ -191,6 +213,8 @@ export function OrderDetailPage() {
 
             <div className="space-y-6">
               <OrderDetailSummary order={order} />
+
+              <OrderCommercialHistory order={order} />
 
               <OrderStatusHistory order={order} />
             </div>
@@ -203,7 +227,7 @@ export function OrderDetailPage() {
           newStatus={newStatus}
           currentStatus={order.status}
           open={isStatusDialogOpen}
-          loading={changeStatus.isPending}
+          loading={changeStatus.isPending || createOrderProduction.isPending}
           onClose={() => setIsStatusDialogOpen(false)}
           onConfirm={handleChangeStatus}
         />

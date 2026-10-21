@@ -44,6 +44,13 @@ export function useProduction(filters: ProductionFilters = {}, enabled = true) {
   });
 }
 
+export function useProductionSummary() {
+  return useQuery({
+    queryKey: [...productionKeys.all, "summary"],
+    queryFn: () => productionApi.getSummary(),
+  });
+}
+
 export function usePendingProductionOrder(orderId: string, enabled = true) {
   return useQuery({
     queryKey: productionKeys.pendingOrder(orderId),

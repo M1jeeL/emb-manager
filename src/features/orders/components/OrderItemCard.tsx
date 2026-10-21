@@ -1,4 +1,5 @@
 import type { Garment, Logo } from "../../../types";
+import type { OrderBuilderItem } from "../types/create-order";
 
 import { OrderLogoSelector } from "./OrderLogoSelector";
 import { OrderItemLogoRow } from "./OrderItemLogoRow";
@@ -13,12 +14,19 @@ export interface OrderBuilderLogo {
   unitPrice: string;
 
   quantity: number;
+  placement: string;
 }
 
 interface OrderItemCardProps {
   garment: Garment;
 
   quantity: number;
+  description: string;
+  notes: string;
+  size: string;
+  color: string;
+  onDetailsChange: (changes: Partial<OrderBuilderItem>) => void;
+  onLogoPlacementChange: (logoId: string, placement: string) => void;
 
   logos: OrderBuilderLogo[];
 
@@ -50,6 +58,12 @@ function formatCurrency(value: number) {
 export function OrderItemCard({
   garment,
   quantity,
+  description,
+  notes,
+  size,
+  color,
+  onDetailsChange,
+  onLogoPlacementChange,
   logos,
   customerId,
   onQuantityChange,
@@ -143,6 +157,22 @@ export function OrderItemCard({
             </button>
           </div>
         </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          {([ ["size", "Talla"], ["color", "Color"] ] as const).map(([key, label]) => (
+            <label key={key} className="text-xs font-medium text-slate-600">
+              {label}
+              <input value={key === "size" ? size : color} onChange={(event) => onDetailsChange({ [key]: event.target.value })} disabled={disabled} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-normal text-slate-900" placeholder={key === "size" ? "Ej. M, 10, único" : "Ej. azul marino"} />
+            </label>
+          ))}
+          <label className="text-xs font-medium text-slate-600 sm:col-span-2">
+            Descripción e instrucciones de la prenda
+            <textarea value={description} onChange={(event) => onDetailsChange({ description: event.target.value })} disabled={disabled} rows={2} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-normal text-slate-900" placeholder="Material, personalización o instrucciones para producción" />
+          </label>
+          <label className="text-xs font-medium text-slate-600 sm:col-span-2">
+            Notas de preparación
+            <textarea value={notes} onChange={(event) => onDetailsChange({ notes: event.target.value })} disabled={disabled} rows={2} className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-normal text-slate-900" placeholder="Separación por tallas, entrega parcial, cuidado especial..." />
+          </label>
+        </div>
       </div>
 
       <div className="p-4">
@@ -174,11 +204,13 @@ export function OrderItemCard({
                   name: logo.name,
                   unitPrice: logo.unitPrice,
                   quantity: logo.quantity,
+                  placement: logo.placement,
                 }}
                 maxQuantity={quantity}
                 onQuantityChange={(nextQuantity) =>
                   onLogoQuantityChange(logo.id, nextQuantity)
                 }
+                onPlacementChange={(placement) => onLogoPlacementChange(logo.id, placement)}
                 onRemove={() => onRemoveLogo(logo.id)}
                 disabled={disabled}
               />

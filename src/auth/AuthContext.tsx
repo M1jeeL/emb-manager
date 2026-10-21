@@ -8,6 +8,7 @@ import {
 
 import { authApi } from "../api/auth.api";
 import type { AuthUser, LoginResponse } from "./types";
+import { setAccessToken } from "../api/client";
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -29,30 +30,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     let mounted = true;
+    // Retira el token de acceso legado que se guardaba en localStorage.
+    try {
+      localStorage.removeItem("accessToken");
+    } catch {
+      // Algunos modos privados bloquean localStorage; la sesión usa cookie HttpOnly.
+    }
 
     async function restoreSession() {
-      const token = localStorage.getItem("accessToken");
-      // No existe sesión almacenada.
-      if (!token) {
-        if (mounted) {
-          setUser(null);
-          setLoading(false);
-        }
-
-        return;
-      }
-
       try {
-        // El token existe.
-        // Ahora verificamos que siga siendo válido.
-        const response = await authApi.me();
+        const session = await authApi.refresh();
         if (mounted) {
-          setUser(response.user);
+          setUser(session.user);
         }
       } catch {
-        // El token existe pero ya no es válido.
-        localStorage.removeItem("accessToken");
-
+        setAccessToken(null);
         if (mounted) {
           setUser(null);
         }
@@ -76,13 +68,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       password,
     });
 
-    localStorage.setItem("accessToken", response.accessToken);
-
+    setAccessToken(response.accessToken);
     setUser(response.user);
   }
 
   function logout() {
-    localStorage.removeItem("accessToken");
+    void authApi.logout();
     setUser(null);
   }
 

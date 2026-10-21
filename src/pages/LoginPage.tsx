@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
 export function LoginPage() {
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -12,7 +12,7 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to={user?.role === "EMPLOYEE" ? "/production" : "/dashboard"} replace />;
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -23,7 +23,7 @@ export function LoginPage() {
 
     try {
       await login(email, password);
-      navigate("/dashboard", { replace: true });
+      navigate("/", { replace: true });
     } catch (error) {
       setError(
         error instanceof Error ? error.message : "No se pudo iniciar sesión",

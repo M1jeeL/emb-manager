@@ -27,6 +27,9 @@ const orderItemSchema = z.object({
     .optional()
     .or(z.literal("")),
 
+  size: z.string().trim().max(50).optional().or(z.literal("")),
+  color: z.string().trim().max(80).optional().or(z.literal("")),
+
   quantity: z
     .number()
     .int("La cantidad debe ser un número entero")

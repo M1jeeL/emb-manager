@@ -31,6 +31,7 @@ export interface OrderBuilderLogo {
   currentPrice: string;
   quantity: number;
   notes: string;
+  placement: string;
   description: string | null;
 }
 
@@ -47,6 +48,8 @@ export interface OrderBuilderItem {
 
   description: string;
   notes: string;
+  size: string;
+  color: string;
 
   logos: OrderBuilderLogo[];
 }

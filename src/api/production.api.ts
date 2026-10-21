@@ -54,6 +54,10 @@ function buildQuery(filters: ProductionFilters = {}) {
 }
 
 export const productionApi = {
+  getSummary() {
+    return apiRequest<Partial<Record<ProductionJob["status"], { jobs: number; units: number }>>>("/production/summary");
+  },
+
   findAll(filters: ProductionFilters = {}) {
     return apiRequest<ProductionListResponse>(
       `/production${buildQuery(filters)}`,

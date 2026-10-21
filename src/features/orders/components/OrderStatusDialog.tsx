@@ -67,7 +67,13 @@ export function OrderStatusDialog({
               </h2>
 
               <p className="mt-1 text-sm text-slate-500">
-                El cambio quedará registrado en el historial.
+                {newStatus === "PENDING"
+                  ? "Al aceptar, el precio y descuento quedan acordados y se bloquean para conservar el historial comercial."
+                  : newStatus === "IN_PROGRESS"
+                    ? "Al iniciar un pedido sin trabajos, se crearán automáticamente los trabajos pendientes por prenda y bordado. Después podrás asignar máquina y bordador en esta ficha."
+                  : newStatus === "CANCELLED"
+                    ? "El motivo quedará registrado. Los pedidos con pagos no se pueden cancelar hasta resolver la devolución o regularización."
+                    : "El cambio quedará registrado en el historial."}
               </p>
             </div>
 

@@ -50,6 +50,8 @@ function createEmptyItem(): OrderBuilderItem {
 
     description: "",
     notes: "",
+    size: "",
+    color: "",
 
     logos: [],
   };
@@ -113,6 +115,8 @@ function buildCreateOrderPayload(order: OrderBuilderState): CreateOrderPayload {
       quantity: item.quantity,
 
       description: item.description.trim() || undefined,
+      size: item.size.trim() || undefined,
+      color: item.color.trim() || undefined,
 
       notes: item.notes.trim() || undefined,
 
@@ -126,6 +130,7 @@ function buildCreateOrderPayload(order: OrderBuilderState): CreateOrderPayload {
             },
 
             quantity: logo.quantity,
+            placement: logo.placement.trim() || undefined,
 
             notes: logo.notes.trim() || undefined,
           };
@@ -135,6 +140,7 @@ function buildCreateOrderPayload(order: OrderBuilderState): CreateOrderPayload {
           logoId: logo.logo!.id,
 
           quantity: logo.quantity,
+          placement: logo.placement.trim() || undefined,
 
           notes: logo.notes.trim() || undefined,
         };
@@ -356,6 +362,7 @@ export function CreateOrderPage() {
               description: logo.description ?? "",
               quantity: item.quantity,
               notes: "",
+              placement: "",
             },
           ],
         };
@@ -418,6 +425,7 @@ export function CreateOrderPage() {
               description: "",
               quantity: 1,
               notes: "",
+              placement: "",
             },
           ],
         };
@@ -1021,6 +1029,12 @@ export function CreateOrderPage() {
                 key={item.id}
                 garment={item.garment}
                 quantity={item.quantity}
+                description={item.description}
+                notes={item.notes}
+                size={item.size}
+                color={item.color}
+                onDetailsChange={(changes) => updateItem(item.id, changes)}
+                onLogoPlacementChange={(logoId, placement) => setOrder((current) => ({ ...current, items: current.items.map((entry) => entry.id === item.id ? { ...entry, logos: entry.logos.map((logo) => logo.id === logoId ? { ...logo, placement } : logo) } : entry) }))}
                 logos={item.logos.map((logo) => ({
                   ...logo,
                   logoId: logo.logo?.id ?? logo.id,

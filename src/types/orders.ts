@@ -75,6 +75,7 @@ export interface OrderListItem {
   paidAmount: string;
 
   notes: string | null;
+  placement: string | null;
 
   createdAt: string;
   updatedAt: string;
@@ -124,6 +125,7 @@ export interface OrderItemLogo {
   quantity: number;
   pendingQuantity?: number;
   notes: string | null;
+  placement: string | null;
 
   createdAt: string;
 
@@ -136,6 +138,8 @@ export interface OrderItem {
   garmentId: string;
 
   description: string | null;
+  size: string | null;
+  color: string | null;
 
   quantity: number;
 
@@ -215,7 +219,20 @@ export interface OrderDetail extends OrderListItem {
 
   statusHistory: OrderStatusHistory[];
 
+  commercialRevisions: OrderCommercialRevision[];
+
   _count: OrderCounts;
+}
+
+export interface OrderCommercialRevision {
+  id: string;
+  revision: number;
+  subtotal: string;
+  discount: string;
+  total: string;
+  reason: string | null;
+  createdAt: string;
+  changedBy: { id: string; firstName: string; lastName: string } | null;
 }
 
 /* ============================================================
@@ -255,6 +272,8 @@ export interface CreateOrderLogoPayload {
 
   quantity: number;
 
+  placement?: string;
+
   notes?: string;
 }
 
@@ -264,6 +283,9 @@ export interface CreateOrderItemPayload {
   quantity: number;
 
   description?: string;
+
+  size?: string;
+  color?: string;
 
   notes?: string;
 

@@ -25,6 +25,7 @@ const navigation: NavigationSection[] = [
         label: "Dashboard",
         path: "/",
         icon: "⌂",
+        roles: ["OWNER", "ADMIN", "MANAGER"],
       },
     ],
   },

@@ -79,7 +79,7 @@ export function OrderDetailEditForm({
 
     await onSubmit({
       promisedAt: promisedAt || null,
-      discount: String(numericDiscount),
+      ...(order.status === "QUOTE" ? { discount: String(numericDiscount) } : {}),
       notes: notes.trim() || null,
     });
   }
@@ -133,14 +133,16 @@ export function OrderDetailEditForm({
               step="1"
               value={discount}
               onChange={(event) => setDiscount(event.target.value)}
+              readOnly={order.status !== "QUOTE"}
               disabled={loading}
-              className="block w-full rounded-lg border border-slate-300 py-2.5 pl-8 pr-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 disabled:bg-slate-100"
+              className="block w-full rounded-lg border border-slate-300 py-2.5 pl-8 pr-3 text-sm outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200 read-only:bg-slate-100 disabled:bg-slate-100"
             />
           </div>
 
           <p className="mt-1 text-xs text-slate-400">
             Subtotal actual: ${Number(order.subtotal).toLocaleString("es-CL")}
           </p>
+          {order.status !== "QUOTE" && <p className="mt-1 text-xs text-amber-700">El descuento acordado queda bloqueado después de aceptar la cotización.</p>}
         </div>
 
         <div>

@@ -31,6 +31,7 @@ export interface ProductionOrderItemLogo {
   logoName: string;
   unitPrice: string;
   quantity: number;
+  placement: string | null;
   notes: string | null;
 }
 
@@ -39,6 +40,8 @@ export interface ProductionOrderItem {
   orderId: string;
   garmentId: string;
   description: string | null;
+  size: string | null;
+  color: string | null;
   quantity: number;
   subtotal: string;
   status: string;
@@ -198,6 +201,8 @@ export interface ProductionPendingOrderItem {
   id: string;
   garmentId: string;
   description: string | null;
+  size: string | null;
+  color: string | null;
   quantity: number;
   status: string;
   notes: string | null;

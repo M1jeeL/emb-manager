@@ -6,6 +6,7 @@ import {
   useCreateOrderProduction,
   useCreateProductionJob,
   useProduction,
+  useProductionSummary,
   useUpdateProductionJob,
   useAvailableProductionOrders,
 } from "../../../hooks/useProduction";
@@ -82,6 +83,7 @@ export function ProductionPage() {
 
   // --- React Query Hooks ---
   const productionQuery = useProduction(filters);
+  const summaryQuery = useProductionSummary();
   const employeesQuery = useEmployees({
     page: 1,
     limit: 100,
@@ -124,19 +126,12 @@ export function ProductionPage() {
     [productionQuery.data?.data],
   );
 
-  const stats = useMemo(() => {
-    return jobs.reduce(
-      (acc, job) => {
-        acc.totalUnits += job.quantity || 0;
-        if (job.status === "PENDING") acc.pending++;
-        if (job.status === "IN_PROGRESS") acc.inProgress++;
-        if (job.status === "PAUSED") acc.paused++;
-        if (job.status === "COMPLETED") acc.completed++;
-        return acc;
-      },
-      { pending: 0, inProgress: 0, paused: 0, completed: 0, totalUnits: 0 },
-    );
-  }, [jobs]);
+  const stats = {
+    pending: summaryQuery.data?.PENDING?.jobs ?? 0,
+    inProgress: summaryQuery.data?.IN_PROGRESS?.jobs ?? 0,
+    paused: summaryQuery.data?.PAUSED?.jobs ?? 0,
+    completed: summaryQuery.data?.COMPLETED?.jobs ?? 0,
+  };
 
   const handleCloseForm = () => {
     setFormOpen(false);
@@ -487,6 +482,7 @@ export function ProductionPage() {
                         </span>
                       </div>
 
+                      {(job.orderItem.size || job.orderItem.color) && <p className="text-xs text-slate-600">{[job.orderItem.size && `Talla ${job.orderItem.size}`, job.orderItem.color && `Color ${job.orderItem.color}`].filter(Boolean).join(" · ")}</p>}
                       {job.orderItemLogo && (
                         <div className="inline-flex items-center gap-1.5 text-xs bg-indigo-50/70 text-indigo-700 px-2 py-1 rounded-md border border-indigo-100 font-medium w-full">
                           <span>🎨 Logo:</span>
@@ -495,6 +491,8 @@ export function ProductionPage() {
                           </span>
                         </div>
                       )}
+                      {job.orderItemLogo?.placement && <p className="text-xs font-semibold text-indigo-700">📍 {job.orderItemLogo.placement}</p>}
+                      {job.orderItem.description && <p className="text-xs text-slate-600">{job.orderItem.description}</p>}
                     </div>
 
                     {/* Asignación Máquina & Bordador */}
@@ -519,7 +517,7 @@ export function ProductionPage() {
                     </div>
 
                     {/* Notas y Tiempos si existen */}
-                    {(job.notes || duration) && (
+                    {(job.notes || job.orderItem.notes || duration) && (
                       <div className="text-xs space-y-1 bg-slate-50/80 p-2 rounded-md border border-slate-100">
                         {duration && (
                           <div className="text-slate-500 font-medium">
@@ -534,6 +532,7 @@ export function ProductionPage() {
                             📝 {job.notes}
                           </div>
                         )}
+                        {job.orderItem.notes && <div className="text-slate-700">Preparación: {job.orderItem.notes}</div>}
                       </div>
                     )}
 
@@ -604,6 +603,9 @@ export function ProductionPage() {
                                 Sin logo adjunto
                               </p>
                             )}
+                            {job.orderItemLogo?.placement && <p className="text-xs font-semibold text-indigo-700">📍 {job.orderItemLogo.placement}</p>}
+                            {(job.orderItem.size || job.orderItem.color) && <p className="text-xs text-slate-600">{[job.orderItem.size && `Talla ${job.orderItem.size}`, job.orderItem.color && `Color ${job.orderItem.color}`].filter(Boolean).join(" · ")}</p>}
+                            {job.orderItem.notes && <p className="max-w-[220px] truncate text-xs text-slate-600" title={job.orderItem.notes}>Preparación: {job.orderItem.notes}</p>}
                             {job.notes && (
                               <p
                                 className="text-[11px] text-amber-700 italic truncate max-w-[200px] mt-0.5"
