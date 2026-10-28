@@ -101,6 +101,14 @@ export function OrderDetailPage() {
     status: NonNullable<typeof order>["status"],
     notes?: string,
   ) {
+    if (!order) {
+      toast.error(
+        "No se pudo cambiar el estado",
+        "La orden ya no está disponible.",
+      );
+      return;
+    }
+
     try {
       if (
         status === "IN_PROGRESS" &&
@@ -183,7 +191,11 @@ export function OrderDetailPage() {
           setIsStatusDialogOpen(true);
         }}
         onGeneratePayment={() => setIsPaymentDialogOpen(true)}
-        disabled={updateOrder.isPending || changeStatus.isPending || createOrderProduction.isPending}
+        disabled={
+          updateOrder.isPending ||
+          changeStatus.isPending ||
+          createOrderProduction.isPending
+        }
       />
 
       {isFetching && !isLoading && (
